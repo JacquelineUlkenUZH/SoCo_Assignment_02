@@ -1,5 +1,20 @@
 OPS = {name.replace("do_", ""): func for (name, func) in globals().items() if name.startswith("do_")}
 
+
+def do_addieren(args):
+    assert len(args) == 2
+    left = do(args[0])
+    right = do(args[1])
+    return left + right
+
+
+def do_subtrahieren(args):
+    assert len(args) == 2
+    left = do(args[0])
+    right = do(args[1])
+    return left - right
+
+
 def do(env, expr):
     # Lists trigger function calls.
     if isinstance(expr, list):
