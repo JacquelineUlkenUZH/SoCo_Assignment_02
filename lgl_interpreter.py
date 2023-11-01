@@ -76,6 +76,12 @@ def do_aufrufen(envs,args):
     return result
 
 
+def do_abfolge(envs, args):
+    assert len(args) > 0
+    for operation in args:
+        result = do(envs, operation)
+    return result
+
 
 OPS = {name.replace("do_", ""): func for (name, func) in globals().items() if name.startswith("do_")}
 
@@ -88,3 +94,17 @@ def do(env, expr):
     # Everything else returns itself
     else:
       return expr
+
+
+def main():
+    assert len(sys.argv) == 2, "Usage: funcs-demo.py filename.gsc"
+    with open(sys.argv[1], "r") as source_file:
+        program = json.load(source_file)
+    assert isinstance(program, list)
+    envs = [{}]
+    result = do(envs, program)
+    print(f"=> {result}")
+
+
+if __name__ == "__main__":
+    main()
