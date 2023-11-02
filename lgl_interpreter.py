@@ -25,6 +25,28 @@ def do_subtrahieren(envs, args):
     return left - right
 
 
+def do_dividieren(envs, args):
+    assert len(args) == 2
+    left = do(envs, args[0])
+    right = do(envs, args[1])
+    return left / right
+
+
+def do_potenzieren(envs, args):
+    assert len(args) == 2
+    left = do(envs, args[0])
+    right = do(envs, args[1])
+    return left**right
+
+
+def do_multiplizieren(envs, args):
+    assert len(args) >= 2
+    product = 1
+    for arg in args:
+        product *= do(envs, arg)
+    return product
+
+
 def do_absolutwert(envs, args):
     assert len(args) == 1
     value = do(envs, args[0])
@@ -76,23 +98,9 @@ def do_funkaufrufen(envs, args):
     return result
 
 
-def do_abfolge(envs, args):
-    assert len(args) > 0
-    for operation in args:
-        result = do(envs, operation)
-    return result
-
-
 ###############################################
 # From here we add our calling infrastructure #
 ###############################################
-
-
-OPS = {
-    name.replace("do_", ""): func
-    for (name, func) in globals().items()
-    if name.startswith("do_")
-}
 
 
 def do(envs, expr):
@@ -105,6 +113,25 @@ def do(envs, expr):
     else:
         return expr
 
+
+def do_abfolge(envs, args):
+    assert len(args) > 0
+    for operation in args:
+        result = do(envs, operation)
+    return result
+
+
+def do_ausdrucken(envs, args):
+    assert len(args) > 0
+    for arg in args:
+        print(do(envs, arg))
+    return None
+
+OPS = {
+    name.replace("do_", ""): func
+    for (name, func) in globals().items()
+    if name.startswith("do_")
+}
 
 # Environment
 def envs_get(envs, name):
@@ -143,7 +170,7 @@ def main():
         assert isinstance(program, list)
         envs = [{}]
         result = do(envs, program)
-        print(f"=> {result}")
+        print(result)
 
 
 if __name__ == "__main__":
