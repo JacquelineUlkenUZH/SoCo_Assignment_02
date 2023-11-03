@@ -135,9 +135,14 @@ def do_abfolge(envs, args):
 
 def do_ausdrucken(envs, args):
     assert len(args) > 0
+    nobr = "nobr" in args
     for arg in args:
         result = do(envs, arg)
-        print(result)
+        if nobr:
+            args.remove("nobr")
+            print(result, end="")
+        else:
+            print(result)
     return result
 
 
@@ -202,7 +207,7 @@ def main():
         assert isinstance(program, list)
         envs = [{}]
         result = do(envs, program)
-        print(result)
+        # print(result)
 
 
 if __name__ == "__main__":
