@@ -130,6 +130,7 @@ def do_ausdrucken(envs, args):
 
 
 def do_solange(envs, args, previousresult = None):
+    # Passing previousresult recursively because otherwise last iteration would be None
     # arg[0] = [Wert1] oder [Wert1, Vergleich, Wert2]
     # arg[1] = Liste der Abfolge
     assert len(args) == 2
@@ -142,7 +143,7 @@ def do_solange(envs, args, previousresult = None):
     
     if eval(teststr):
         previousresult = do_abfolge(envs, args[1])
-        return do_solange(envs, args, previousresult) # passing result because otherwise it would be None
+        return do_solange(envs, args, previousresult)
     else:
         return previousresult
 
