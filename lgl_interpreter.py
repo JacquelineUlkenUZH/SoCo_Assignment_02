@@ -55,18 +55,30 @@ def do_absolutwert(envs, args):
 
 # Variables
 def do_varsetzen(envs, args):
-    assert len(args) == 2
+    assert len(args) == 2 or len(args) == 3
     assert isinstance(args[0], str)
     var_name = args[0]
     value = do(envs, args[1])
+    if isinstance(value, str) and value.startswith("[") and value.endswith("]"):
+        value = eval(value) # Convert string to list
+    if len(args) == 3:
+        assert isinstance(args[2], int)
+        liste = envs_get(envs, var_name)
+        index = args[2]
+        liste[index] = value
+        return value
     envs_set(envs, var_name, value)
     return value
 
 
 def do_varabrufen(envs, args):
-    assert len(args) == 1
+    assert len(args) == 1 or len(args) == 2
+    if len(args) == 2:
+        assert isinstance(args[1], int)
+        liste = envs_get(envs, args[0])
+        index = args[1]
+        return liste[index]
     return envs_get(envs, args[0])
-
 
 # Functions
 def do_funktion(envs, args):

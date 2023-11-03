@@ -1,7 +1,4 @@
 ["abfolge",
-        ["varsetzen", "a", "True"],
-        ["solange", [["varabrufen", "a"]], [
-            ["varsetzen", "a", "False"],
-            ["varsetzen", "erfolg", "solange executed"]            
-        ]],
-        ["varabrufen", "erfolg"]]
+  ["varsetzen", "a", "[1, 'wort', True]"],
+  ["varsetzen", "a", "velo", 1],
+  ["varabrufen", "a", 1]]

@@ -1,6 +1,80 @@
 from lgl_interpreter import *
 
 
+def test_listen_setzen_abrufen_position():
+    program = json.loads(
+        """
+        ["abfolge",
+  ["varsetzen", "a", "[1, 'wort', True]"],
+  ["varsetzen", "a", "velo", 1],
+  ["varabrufen", "a", 1]]
+    """
+    )
+    actual = do([{}], program)
+    expected = "velo"
+    assert actual == expected
+
+
+def test_listen_setzen_abrufen():
+    program = json.loads(
+        """
+        ["abfolge",
+  ["varsetzen", "a", "[1.75, 'wort', True]"],
+  ["varabrufen", "a"]]
+    """
+    )
+    actual = do([{}], program)
+    expected = [1.75, 'wort', True]
+    assert actual == expected
+
+
+def test_while_addup():
+    program = json.loads(
+        """
+        ["abfolge",
+        ["varsetzen", "a", 0],
+        ["solange", [["varabrufen", "a"], "<", 5], [
+            ["varsetzen", "a", ["addieren", ["varabrufen", "a"], 1]]]]
+        ]
+    """
+    )
+    actual = do([{}], program)
+    expected = 5
+    assert actual == expected
+
+
+def test_while_addup2():
+    program = json.loads(
+        """
+        ["abfolge",
+        ["varsetzen", "a", 0],
+        ["solange", [["varabrufen", "a"], "!=", 56], [
+            ["varsetzen", "a", ["addieren", ["varabrufen", "a"], 1]]]]
+        ]
+    """
+    )
+    actual = do([{}], program)
+    expected = 56
+    assert actual == expected
+
+
+def test_while_defined():
+    program = json.loads(
+        """
+        ["abfolge",
+        ["varsetzen", "a", "True"],
+        ["solange", [["varabrufen", "a"]], [
+            ["varsetzen", "a", "False"],
+            ["varsetzen", "erfolg", "solange executed"]            
+        ]],
+        ["varabrufen", "erfolg"]]
+    """
+    )
+    actual = do([{}], program)
+    expected = "solange executed"
+    assert actual == expected
+
+
 def test_functions_variables_init():
     program = json.loads(
         """[
@@ -56,53 +130,6 @@ def test_multiply_multiple_values():
     )
     actual = do([{}], program)
     expected = 252
-    assert actual == expected
-
-
-def test_while_addup():
-    program = json.loads(
-        """
-        ["abfolge",
-        ["varsetzen", "a", 0],
-        ["solange", [["varabrufen", "a"], "<", 5], [
-            ["varsetzen", "a", ["addieren", ["varabrufen", "a"], 1]]]]
-        ]
-    """
-    )
-    actual = do([{}], program)
-    expected = 5
-    assert actual == expected
-
-
-def test_while_addup2():
-    program = json.loads(
-        """
-        ["abfolge",
-        ["varsetzen", "a", 0],
-        ["solange", [["varabrufen", "a"], "!=", 56], [
-            ["varsetzen", "a", ["addieren", ["varabrufen", "a"], 1]]]]
-        ]
-    """
-    )
-    actual = do([{}], program)
-    expected = 56
-    assert actual == expected
-
-
-def test_while_defined():
-    program = json.loads(
-        """
-        ["abfolge",
-        ["varsetzen", "a", "True"],
-        ["solange", [["varabrufen", "a"]], [
-            ["varsetzen", "a", "False"],
-            ["varsetzen", "erfolg", "solange executed"]            
-        ]],
-        ["varabrufen", "erfolg"]]
-    """
-    )
-    actual = do([{}], program)
-    expected = "solange executed"
     assert actual == expected
 
 
