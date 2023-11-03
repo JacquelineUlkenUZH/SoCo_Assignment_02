@@ -136,8 +136,12 @@ def do_abfolge(envs, args):
 def do_ausdrucken(envs, args):
     assert len(args) > 0
     nobr = "nobr" in args
+    title = "title" in args
     for arg in args:
         result = do(envs, arg)
+        if title:
+            args.remove("title")
+            result = "\033[92m" + result + "\033[0m" # Green
         if nobr:
             args.remove("nobr")
             print(result, end="")

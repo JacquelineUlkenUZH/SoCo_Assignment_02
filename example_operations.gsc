@@ -3,7 +3,7 @@
   ["ausdrucken", "Welcome to our programming language: The Little German Language, LGL!"],
 
   ["ausdrucken", ""],
-  ["ausdrucken", "### Basic arithmetic and variables ###"],
+  ["ausdrucken", "### Basic arithmetic and variables ###", "title"],
   ["ausdrucken", "We create a variable 'a' = 8. We then showcase basic math operations."],
   ["ausdrucken", ["varsetzen", "a", 8]],
   ["ausdrucken", "add 2"],
@@ -18,7 +18,7 @@
   ["ausdrucken", ["varsetzen", "a", ["potenzieren", ["varabrufen", "a"], 3]]],
   
   ["ausdrucken", ""],
-  ["ausdrucken", "### While loop ###"],
+  ["ausdrucken", "### While loop ###", "title"],
   ["ausdrucken", "We create a=2 and b=20, then add 5 to a and 1 to b as long as a<b."],
   ["ausdrucken", ["varsetzen", "a", 2]],
   ["ausdrucken", ["varsetzen", "b", 20]],
@@ -30,10 +30,13 @@
   ]],
   
   ["ausdrucken", ""],
-  ["ausdrucken", "### Lists ###"],
+  ["ausdrucken", "### Lists ###", "title"],
   ["ausdrucken", "We create [1, 'wort', True], retrieve the last position, change 'wort' to 'bike' and print the final list:"],
   ["ausdrucken", ["varsetzen", "a", "[1, 'wort', True]"]],
   ["ausdrucken", ["varabrufen", "a", 2]],
   ["ausdrucken", ["varsetzen", "a", "bike", 1]],
-  ["ausdrucken", ["varabrufen", "a"]]
+  ["ausdrucken", ["varabrufen", "a"]],
+
+  
+  ["ausdrucken", ""]
 ]
