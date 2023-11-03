@@ -25,6 +25,28 @@ def do_subtrahieren(envs, args):
     return left - right
 
 
+def do_dividieren(envs, args):
+    assert len(args) == 2
+    left = do(envs, args[0])
+    right = do(envs, args[1])
+    return left / right
+
+
+def do_potenzieren(envs, args):
+    assert len(args) == 2
+    left = do(envs, args[0])
+    right = do(envs, args[1])
+    return left**right
+
+
+def do_multiplizieren(envs, args):
+    assert len(args) >= 2
+    product = 1
+    for arg in args:
+        product *= do(envs, arg)
+    return product
+
+
 def do_absolutwert(envs, args):
     assert len(args) == 1
     value = do(envs, args[0])
@@ -76,23 +98,9 @@ def do_funkaufrufen(envs, args):
     return result
 
 
-def do_abfolge(envs, args):
-    assert len(args) > 0
-    for operation in args:
-        result = do(envs, operation)
-    return result
-
-
 ###############################################
 # From here we add our calling infrastructure #
 ###############################################
-
-
-OPS = {
-    name.replace("do_", ""): func
-    for (name, func) in globals().items()
-    if name.startswith("do_")
-}
 
 
 def do(envs, expr):
@@ -104,6 +112,45 @@ def do(envs, expr):
     # Everything else returns itself
     else:
         return expr
+
+
+def do_abfolge(envs, args):
+    assert len(args) > 0
+    for operation in args:
+        result = do(envs, operation)
+    return result
+
+
+def do_ausdrucken(envs, args):
+    assert len(args) > 0
+    for arg in args:
+        result = do(envs, arg)
+        print(result)
+    return result
+
+
+def do_solange(envs, args, previousresult = None):
+    # arg[0] = [Wert1] oder [Wert1, Vergleich, Wert2]
+    # arg[1] = Liste der Abfolge
+    assert len(args) == 2
+    assert len(args[0]) == 1 or len(args[0]) == 3
+
+    teststr = f"{do(envs, args[0][0])}"
+    if len(args[0]) == 3:
+        assert isinstance(args[0][1], str)
+        teststr += f" {do(envs, args[0][1])} {do(envs, args[0][2])}"
+    
+    if eval(teststr):
+        previousresult = do_abfolge(envs, args[1])
+        return do_solange(envs, args, previousresult) # passing result because otherwise it would be None
+    else:
+        return previousresult
+
+OPS = {
+    name.replace("do_", ""): func
+    for (name, func) in globals().items()
+    if name.startswith("do_")
+}
 
 
 # Environment
@@ -143,7 +190,7 @@ def main():
         assert isinstance(program, list)
         envs = [{}]
         result = do(envs, program)
-        print(f"=> {result}")
+        print(result)
 
 
 if __name__ == "__main__":
