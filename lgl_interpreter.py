@@ -5,6 +5,7 @@ import os
 abspath = os.path.dirname(os.path.abspath(__file__))
 os.chdir(abspath)
 
+
 ###################################
 # From here we add do_ operations #
 ###################################
@@ -36,7 +37,7 @@ def do_potenzieren(envs, args):
     assert len(args) == 2
     left = do(envs, args[0])
     right = do(envs, args[1])
-    return left**right
+    return left ** right
 
 
 def do_multiplizieren(envs, args):
@@ -53,6 +54,12 @@ def do_absolutwert(envs, args):
     return abs(value)
 
 
+# Boolean Values
+def do_kleiner_als(envs, args):
+    assert len(args) == 2
+    return do(envs, args[0]) < do(envs, args[1])
+
+
 # Variables
 def do_varsetzen(envs, args):
     assert len(args) == 2 or len(args) == 3
@@ -60,7 +67,7 @@ def do_varsetzen(envs, args):
     var_name = args[0]
     value = do(envs, args[1])
     if isinstance(value, str) and value.startswith("[") and value.endswith("]"):
-        value = eval(value) # Convert string to list
+        value = eval(value)  # Convert string to list
     if len(args) == 3:
         assert isinstance(args[2], int)
         liste = envs_get(envs, var_name)
@@ -79,6 +86,7 @@ def do_varabrufen(envs, args):
         index = args[1]
         return liste[index]
     return envs_get(envs, args[0])
+
 
 # Functions
 def do_funktion(envs, args):
@@ -141,16 +149,16 @@ def do_ausdrucken(envs, args):
         result = do(envs, arg)
         if title:
             args.remove("title")
-            result = "\033[92m" + result + "\033[0m" # Green
+            result = "\033[92m" + result + "\033[0m"  # Green
         if nobr:
             args.remove("nobr")
             print(result, end="")
         else:
             print(result)
-    return result
+    return None
 
 
-def do_solange(envs, args, previousresult = None):
+def do_solange(envs, args, previousresult=None):
     # Passing previousresult recursively because otherwise last iteration would be None
     # arg[0] = [Wert1] oder [Wert1, Vergleich, Wert2]
     # arg[1] = Liste der Abfolge
@@ -161,18 +169,33 @@ def do_solange(envs, args, previousresult = None):
     if len(args[0]) == 3:
         assert isinstance(args[0][1], str)
         teststr += f" {do(envs, args[0][1])} {do(envs, args[0][2])}"
-    
+
     if eval(teststr):
         previousresult = do_abfolge(envs, args[1])
         return do_solange(envs, args, previousresult)
     else:
         return previousresult
 
+
+def do_solange_alt(envs, args):
+    assert len(args) == 2
+
+    condition = args[0]
+    operation = args[1]
+
+    if do(envs, condition):
+        do(envs, operation)
+        do_solange_alt(envs, [condition, operation])
+
+    return None
+
+
 OPS = {
     name.replace("do_", ""): func
     for (name, func) in globals().items()
     if name.startswith("do_")
 }
+
 
 # Environment
 def envs_get(envs, name):
@@ -192,7 +215,7 @@ def main():
     # Parse arguments
     parser = argparse.ArgumentParser(
         prog="lgl_interpreter.py",
-        description="Runs our little germal programming language.",
+        description="Runs our little German programming language.",
         epilog="",
     )
     # nargs="+" means "at least one"

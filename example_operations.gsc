@@ -16,6 +16,20 @@
   ["ausdrucken", ["varsetzen", "a", ["multiplizieren", ["varabrufen", "a"], 3, 6, -7]]],
   ["ausdrucken", "to the power of 3"],
   ["ausdrucken", ["varsetzen", "a", ["potenzieren", ["varabrufen", "a"], 3]]],
+
+  ["ausdrucken", ""],
+  ["ausdrucken", "### While loop alternative ###", "title"],
+  ["ausdrucken", "We create a=2 and b=20, then add 5 to a and 1 to b as long as a<b."],
+  ["ausdrucken", ["varsetzen", "a", 2]],
+  ["ausdrucken", ["varsetzen", "b", 20]],
+  ["solange_alt", ["kleiner_als", ["varabrufen", "a"], ["varabrufen", "b"]],
+    ["abfolge",
+    ["ausdrucken", "a = ", "nobr"],
+    ["ausdrucken", ["varsetzen", "a", ["addieren", ["varabrufen", "a"], 5]]],
+    ["ausdrucken", "b = ", "nobr"],
+    ["ausdrucken", ["varsetzen", "b", ["addieren", ["varabrufen", "b"], 1]]]
+    ]
+  ],
   
   ["ausdrucken", ""],
   ["ausdrucken", "### While loop ###", "title"],
