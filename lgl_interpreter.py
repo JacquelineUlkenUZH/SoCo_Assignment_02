@@ -6,62 +6,235 @@ abspath = os.path.dirname(os.path.abspath(__file__))
 os.chdir(abspath)
 
 
-###################################
-# From here we add do_ operations #
-###################################
+############
+# Comments #
+############
+def do_kommentar(envs, args):
+    """Ignore any instructions.
+
+    Syntax:
+        ["kommentar", "Dies ist ein Kommentar."]
+    Returns:
+        None
+    """
+
+    return None
 
 
-# Arithmetic
+############
+# Printing #
+############
+
+def do_ausdrucken(envs, args):
+    """Prints an expression to the console.
+
+    Syntax:
+        ["ausdrucken", expr]
+        ["ausdrucken", expr, "nobr"] -> no linebreak at the end
+        ["ausdrucken", expr, "title"] -> print in green
+    Returns:
+        None
+    """
+    assert len(args) > 0
+    nobr = "nobr" in args
+    title = "title" in args
+    for arg in args:
+        result = do(envs, arg)
+        if title:
+            args.remove("title")
+            result = "\033[92m" + result + "\033[0m"  # Green
+        if nobr:
+            args.remove("nobr")
+            print(result, end="")
+        else:
+            print(result)
+    return None
+
+
+##############
+# Arithmetic #
+##############
 def do_addieren(envs, args):
+    """Add two numbers.
+
+    Syntax:
+        ["addieren", a, b]
+    Returns:
+        a + b
+    """
+
     assert len(args) == 2
-    left = do(envs, args[0])
-    right = do(envs, args[1])
-    return left + right
+    return do(envs, args[0]) + do(envs, args[1])
 
 
 def do_subtrahieren(envs, args):
+    """Subtract the second from the first number
+
+    Syntax:
+        ["subtrahieren", a, b]
+    Returns:
+        a - b
+    """
+
     assert len(args) == 2
-    left = do(envs, args[0])
-    right = do(envs, args[1])
-    return left - right
-
-
-def do_dividieren(envs, args):
-    assert len(args) == 2
-    left = do(envs, args[0])
-    right = do(envs, args[1])
-    return left / right
-
-
-def do_potenzieren(envs, args):
-    assert len(args) == 2
-    left = do(envs, args[0])
-    right = do(envs, args[1])
-    return left ** right
+    return do(envs, args[0]) - do(envs, args[1])
 
 
 def do_multiplizieren(envs, args):
-    assert len(args) >= 2
+    """Multiplies two numbers
+
+    Syntax:
+        ["multiplizieren", a, b]
+    Returns:
+        a * b
+    """
+
+    assert len(args) == 2
+    return do(envs, args[0]) * do(envs, args[1])
+
+
+def do_produkt(envs, args):
+    """Calculates the product of the given numbers
+
+    Syntax:
+        ["produkt", a, b, c, ...]
+    Returns:
+        a * b * c * ...
+    """
+
+    assert len(args) > 1
     product = 1
     for arg in args:
         product *= do(envs, arg)
     return product
 
 
+def do_dividieren(envs, args):
+    """Divide the first number by the second number
+
+    Syntax:
+        ["dividieren", a, b]
+    Returns:
+        a / b
+    """
+    assert len(args) == 2
+    return do(envs, args[0]) / do(envs, args[1])
+
+
+def do_potenzieren(envs, args):
+    """Raises the first number to the second number's power
+
+    Syntax:
+        ["potenzieren", a, b]
+    Returns:
+        a ** b
+    """
+
+    assert len(args) == 2
+    return do(envs, args[0]) ** do(envs, args[1])
+
+
 def do_absolutwert(envs, args):
+    """Absolute value
+
+    Syntax:
+        ["absolutwert", a]
+    Returns:
+        abs(a)
+    """
+
     assert len(args) == 1
-    value = do(envs, args[0])
-    return abs(value)
+    return abs(do(envs, args[0]))
 
 
-# Boolean Values
+##############
+# Comparison #
+##############
+def do_gleich(envs, args):
+    """Equates two expressions
+
+    Syntax:
+        ["gleich", a, b]
+    Returns:
+        a == b
+    """
+
+    assert len(args) == 2
+    return do(envs, args[0]) == do(envs, args[1])
+
+
 def do_kleiner_als(envs, args):
+    """Smaller than
+
+    Syntax:
+        ["kleiner_als", a, b]
+    Returns:
+        a < b
+    """
+
     assert len(args) == 2
     return do(envs, args[0]) < do(envs, args[1])
 
 
-# Variables
-def do_varsetzen(envs, args):
+def do_groesser_als(envs, args):
+    """Greater than
+
+    Syntax:
+        ["groesser_als", a, b]
+    Returns:
+        a > b
+    """
+
+    assert len(args) == 2
+    return do(envs, args[0]) > do(envs, args[1])
+
+
+#########
+# Logic #
+#########
+def do_nicht(envs, args):
+    """Logical not
+
+    Syntax:
+        ["nicht", a]
+    Returns:
+        not a
+    """
+
+    assert len(args) == 1
+    return not do(envs, args[0])
+
+
+def do_und(envs, args):
+    """Logical and
+
+    Syntax:
+        ["und", a, b]
+    Returns:
+        a and b
+    """
+
+    assert len(args) == 2
+    return do(envs, args[0]) and do(envs, args[1])
+
+
+def do_oder(envs, args):
+    """Logical or
+
+    Syntax:
+        ["oder", a, b]
+    Returns:
+        a oder b
+    """
+
+    assert len(args) == 2
+    return do(envs, args[0]) or do(envs, args[1])
+
+
+#############
+# Variables #
+#############
+def do_variable_setzen(envs, args):
     assert len(args) == 2 or len(args) == 3
     assert isinstance(args[0], str)
     var_name = args[0]
@@ -70,25 +243,27 @@ def do_varsetzen(envs, args):
         value = eval(value)  # Convert string to list
     if len(args) == 3:
         assert isinstance(args[2], int)
-        liste = envs_get(envs, var_name)
+        liste = get_envs(envs, var_name)
         index = args[2]
         liste[index] = value
         return value
-    envs_set(envs, var_name, value)
+    set_envs(envs, var_name, value)
     return value
 
 
-def do_varabrufen(envs, args):
+def do_variable_abrufen(envs, args):
     assert len(args) == 1 or len(args) == 2
     if len(args) == 2:
         assert isinstance(args[1], int)
-        liste = envs_get(envs, args[0])
+        liste = get_envs(envs, args[0])
         index = args[1]
         return liste[index]
-    return envs_get(envs, args[0])
+    return get_envs(envs, args[0])
 
 
-# Functions
+#############
+# Functions #
+#############
 def do_funktion(envs, args):
     assert len(args) == 2
     params = args[0]
@@ -96,14 +271,14 @@ def do_funktion(envs, args):
     return ["funktion", params, body]
 
 
-def do_funkaufrufen(envs, args):
+def do_funktion_aufrufen(envs, args):
     assert len(args) >= 1
     name = args[0]
     arguments = args[1:]
     # eager evaluation
     values = [do(envs, arg) for arg in arguments]
 
-    func = envs_get(envs, name)
+    func = get_envs(envs, name)
     assert isinstance(func, list)
     assert func[0] == "funktion"
     func_params = func[1]
@@ -118,43 +293,12 @@ def do_funkaufrufen(envs, args):
     return result
 
 
-###############################################
-# From here we add our calling infrastructure #
-###############################################
-
-
-def do(envs, expr):
-    # Lists trigger function calls.
-    if isinstance(expr, list):
-        assert expr[0] in OPS, f"Unknown operation {expr[0]}"
-        func = OPS[expr[0]]
-        return func(envs, expr[1:])
-    # Everything else returns itself
-    else:
-        return expr
-
-
+################
+# Control Flow #
+################
 def do_abfolge(envs, args):
-    assert len(args) > 0
     for operation in args:
-        result = do(envs, operation)
-    return result
-
-
-def do_ausdrucken(envs, args):
-    assert len(args) > 0
-    nobr = "nobr" in args
-    title = "title" in args
-    for arg in args:
-        result = do(envs, arg)
-        if title:
-            args.remove("title")
-            result = "\033[92m" + result + "\033[0m"  # Green
-        if nobr:
-            args.remove("nobr")
-            print(result, end="")
-        else:
-            print(result)
+        do(envs, operation)
     return None
 
 
@@ -179,14 +323,11 @@ def do_solange(envs, args, previousresult=None):
 
 def do_solange_alt(envs, args):
     assert len(args) == 2
-
     condition = args[0]
     operation = args[1]
-
     if do(envs, condition):
         do(envs, operation)
         do_solange_alt(envs, [condition, operation])
-
     return None
 
 
@@ -197,8 +338,21 @@ OPS = {
 }
 
 
-# Environment
-def envs_get(envs, name):
+def do(envs, expr):
+    # Lists trigger function calls
+    if isinstance(expr, list):
+        assert expr[0] in OPS, f"Unknown operation {expr[0]}"
+        func = OPS[expr[0]]
+        return func(envs, expr[1:])
+    # Everything else returns itself
+    else:
+        return expr
+
+
+###############
+# Environment #
+###############
+def get_envs(envs, name):
     assert isinstance(name, str)
     for e in reversed(envs):
         if name in e:
@@ -206,12 +360,14 @@ def envs_get(envs, name):
     assert False, f"Unknown variable name {name}"
 
 
-def envs_set(envs, name, value):
+def set_envs(envs, name, value):
     assert isinstance(name, str)
     envs[-1][name] = value
 
 
 def main():
+    # Dictionary of operations
+
     # Parse arguments
     parser = argparse.ArgumentParser(
         prog="lgl_interpreter.py",
