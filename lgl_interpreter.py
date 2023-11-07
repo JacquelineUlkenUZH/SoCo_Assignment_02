@@ -24,7 +24,6 @@ def do_kommentar(envs, args):
 ############
 # Printing #
 ############
-
 def do_ausdrucken(envs, args):
     """Prints an expression to the console.
 
@@ -259,6 +258,135 @@ def do_variable_abrufen(envs, args):
         index = args[1]
         return liste[index]
     return get_envs(envs, args[0])
+
+
+##########
+# Arrays #
+##########
+def do_liste(envs, args):
+    """Creates a list of the given length with the given elements. We surround the list with a tuple, to not trigger function calls.
+
+    Syntax:
+        ["liste", a, element_1, element_2, ...]
+    Returns:
+        ([element_1, element_2, ... ], )
+    """
+
+    assert len(args) > 1
+    length = do(envs, args[0])
+    elements = args[1:]
+    assert len(elements) == length, f"Angegebene Länge stimmt nicht mit der Anzahl Elemente überein!"
+    for element in elements:
+        do(envs, element)
+    return (elements,)
+
+
+def do_element_abrufen(envs, args):
+    """Get the element at the given index of a liste.
+
+    Syntax:
+        ["element_abrufen", liste, index]
+    Returns:
+        liste[0][idx]
+    """
+
+    assert len(args) == 2
+    lst = do(envs, args[0])
+    idx = do(envs, args[1])
+    assert isinstance(lst, tuple) and isinstance(lst[0], list), f"{lst} ist keine Liste"
+    assert 0 <= idx <= len(lst[0]) - 1, f"Ungültiger index {idx}."
+
+    return lst[0][idx]
+
+
+def do_element_setzen(envs, args):
+    """Set the element at the given index of a liste.
+
+    Syntax:
+        ["element_setzen", liste, index, element]
+    Returns:
+        None
+    """
+
+    assert len(args) == 3
+    lst = do(envs, args[0])
+    idx = do(envs, args[1])
+    element = do(envs, args[2])
+    assert isinstance(lst, tuple) and isinstance(lst[0], list), f"{lst} ist keine Liste."
+    assert 0 <= idx <= len(lst[0]) - 1, f"Ungültiger index {idx}."
+    lst[0][idx] = element
+    return None
+
+
+################
+# Dictionaries #
+################
+
+def do_lexikon(envs, args):
+    """Creates a lexikon a list of keys and values. A lexikon is a list of tuples, surrounded by a tuple to
+       avoid triggering function calls.
+
+    Syntax:
+        ["lexikon", etikette]
+    Returns:
+        ([(etikette[0], None), (etikette[1], None), ... ], )
+    """
+
+    assert len(args) == 2
+    keys = do(envs, args[0])
+    entries = do(envs, args[1])
+    assert isinstance(keys, tuple) and isinstance(keys[0], list), f"{keys} ist keine Liste"
+    assert isinstance(keys, tuple) and isinstance(keys[0], list), f"{keys} ist keine Liste"
+    keys = [i for n, i in enumerate(keys[0]) if i not in keys[0][:n]]  # unpack tuple and remove duplicates
+    entries = entries[0]
+
+    assert len(keys) == len(entries), f"Anzahl Etikette und Anzahl Einträge stimmen nicht überein!"
+    return (list(zip(keys, entries)),)
+
+
+def do_eintrag_abrufen(envs, args):
+    """Get the entry at the given key of a lexikon.
+
+    Syntax:
+        ["element_abrufen", lexikon, etikett]
+    Returns:
+        entry at the given key
+    """
+
+    assert len(args) == 2
+    lexikon = do(envs, args[0])
+    key = do(envs, args[1])
+    assert isinstance(lexikon, tuple) and isinstance(lexikon[0], list), f"{lexikon} ist kein Lexikon."
+    for idx, pair in enumerate(lexikon[0]):
+        assert isinstance(pair, tuple), f"{lexikon} ist kein Lexikon."
+        if pair[0] == key:
+            return pair[1]
+
+    return None
+
+
+def do_eintrag_setzen(envs, args):
+    """Set the entry at the given index of a lexikon.
+
+    Syntax:
+        ["eintrag_setzen", lexikon, etikett, eintrag]
+    Returns:
+        None
+    """
+
+    assert len(args) == 3
+    lexikon = do(envs, args[0])
+    key = do(envs, args[1])
+    entry = do(envs, args[2])
+
+    assert isinstance(lexikon, tuple) and isinstance(lexikon[0], list), f"{lexikon} ist kein Lexikon."
+
+    for idx, pair in enumerate(lexikon[0]):
+        assert isinstance(pair, tuple), f"{lexikon} ist kein Lexikon."
+        if pair[0] == key:
+            lexikon[0][idx] = (key, entry)
+
+    return None
 
 
 #############
