@@ -269,7 +269,7 @@ def do_liste(envs, args):
     Syntax:
         ["liste", a, element_1, element_2, ...]
     Returns:
-        ([element_1, element_2, ... ], )
+        [element_1, element_2, ... ]
     """
 
     assert len(args) > 1
@@ -278,7 +278,7 @@ def do_liste(envs, args):
     assert len(elements) == length, f"Angegebene Länge stimmt nicht mit der Anzahl Elemente überein!"
     for element in elements:
         do(envs, element)
-    return (elements,)
+    return elements
 
 
 def do_element_abrufen(envs, args):
@@ -322,26 +322,20 @@ def do_element_setzen(envs, args):
 # Dictionaries #
 ################
 
+
 def do_lexikon(envs, args):
-    """Creates a lexikon a list of keys and values. A lexikon is a list of tuples, surrounded by a tuple to
-       avoid triggering function calls.
-
-    Syntax:
-        ["lexikon", etikette]
-    Returns:
-        ([(etikette[0], None), (etikette[1], None), ... ], )
+    """Creates a lexikon.
+    Input example: [["a", 1], ["b", 2]]
+    Output: {"a": 1, "b": 2}
     """
-
-    assert len(args) == 2
-    keys = do(envs, args[0])
-    entries = do(envs, args[1])
-    assert isinstance(keys, tuple) and isinstance(keys[0], list), f"{keys} ist keine Liste"
-    assert isinstance(keys, tuple) and isinstance(keys[0], list), f"{keys} ist keine Liste"
-    keys = [i for n, i in enumerate(keys[0]) if i not in keys[0][:n]]  # unpack tuple and remove duplicates
-    entries = entries[0]
-
-    assert len(keys) == len(entries), f"Anzahl Etikette und Anzahl Einträge stimmen nicht überein!"
-    return (list(zip(keys, entries)),)
+    assert len(args) >= 1, "Zu wenig Argumente für das Lexikon"
+    assert all([len(arg) == 2 for arg in args]), "Alle Argumente müssen Länge 2 haben: [key, value]"
+    d = {}
+    for arg in args:
+        key = arg[0]
+        value = arg[1]
+        d[key] = value
+    return d
 
 
 def do_eintrag_abrufen(envs, args):
@@ -356,13 +350,8 @@ def do_eintrag_abrufen(envs, args):
     assert len(args) == 2
     lexikon = do(envs, args[0])
     key = do(envs, args[1])
-    assert isinstance(lexikon, tuple) and isinstance(lexikon[0], list), f"{lexikon} ist kein Lexikon."
-    for idx, pair in enumerate(lexikon[0]):
-        assert isinstance(pair, tuple), f"{lexikon} ist kein Lexikon."
-        if pair[0] == key:
-            return pair[1]
-
-    return None
+    assert isinstance(lexikon, dict), f"{lexikon} ist kein Lexikon."
+    return lexikon[key]
 
 
 def do_eintrag_setzen(envs, args):
@@ -378,15 +367,9 @@ def do_eintrag_setzen(envs, args):
     lexikon = do(envs, args[0])
     key = do(envs, args[1])
     entry = do(envs, args[2])
-
-    assert isinstance(lexikon, tuple) and isinstance(lexikon[0], list), f"{lexikon} ist kein Lexikon."
-
-    for idx, pair in enumerate(lexikon[0]):
-        assert isinstance(pair, tuple), f"{lexikon} ist kein Lexikon."
-        if pair[0] == key:
-            lexikon[0][idx] = (key, entry)
-
-    return None
+    assert isinstance(lexikon, dict), f"{lexikon} ist kein Lexikon."
+    assert key in lexikon, f"{key} existiert nicht im Lexikon."
+    lexikon[key] = entry
 
 
 #############
@@ -518,7 +501,7 @@ def main():
         assert isinstance(program, list)
         envs = [{}]
         result = do(envs, program)
-        # print(result)
+        return result
 
 
 if __name__ == "__main__":
