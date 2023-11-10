@@ -50,14 +50,13 @@
   ["ausdrucken", ["variable_abrufen", "a", 2]],
   ["ausdrucken", ["variable_setzen", "a", "bike", 1]],
   ["ausdrucken", ["variable_abrufen", "a"]],
-
   ["ausdrucken", ""],
   ["ausdrucken", "### Dictionaries ###", "title"],
   ["ausdrucken", "We create a dictionary equivalent to {'Name': 'Alice', 'Alter': 25, 'Beruf': Lehrerin}, retrieve the name, change 'Alter' to 26 and print the final dictionary:"],
-  ["variable_setzen", "person", ["lexikon", [['Name', 'Alice'], ['Alter', '25'], ['Beruf', 'Lehrerin']]],
+  ["variable_setzen", "person", ["lexikon", ["Name", "Alice"], ["Alter", "25"], ["Beruf", "Lehrerin"]]],
   ["ausdrucken", ["variable_abrufen", "person"]],
   ["ausdrucken", ["eintrag_abrufen", ["variable_abrufen", "person"], "Name"]],
   ["eintrag_setzen", ["variable_abrufen", "person"], "Alter", "26"],
   ["ausdrucken", ["variable_abrufen", "person"]],
-  
-  ["ausdrucken", ""]
+
+  ["ausdrucken", ""]]
