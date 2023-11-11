@@ -1,10 +1,27 @@
 import argparse
 import json
 import os
+import uuid
+import datetime
+
+###################
+# Parse arguments #
+###################
 
 abspath = os.path.dirname(os.path.abspath(__file__))
 os.chdir(abspath)
 
+parser = argparse.ArgumentParser(
+    prog="lgl_interpreter.py",
+    description="Runs our little German programming language.",
+    epilog="",
+)
+# nargs="+" means "at least one"
+parser.add_argument("files", nargs="+", help="Specify lgl source files to run")
+parser.add_argument(
+    "--trace", help="Log details of start and end times to FILENAME"
+)
+cargs = parser.parse_args()
 
 ############
 # Comments #
@@ -448,7 +465,21 @@ OPS = {
     if name.startswith("do_")
 }
 
+def trace(func):
+    def wrapper(envs, expr):
+        if not cargs.trace: return func(envs, expr)
+        if not isinstance(expr, list): return func(envs, expr)
+        with open(cargs.trace, "a") as logfile:
+            uid = str(uuid.uuid4().fields[0])[:6]
+            functionname = expr[0]
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+            logfile.write(f"{uid},{functionname},start,{timestamp}\n")
+            result = func(envs, expr)
+            logfile.write(f"{uid},{functionname},stop,{timestamp}\n")
+            return result
+    return wrapper
 
+@trace
 def do(envs, expr):
     # Lists trigger function calls
     if isinstance(expr, list):
@@ -558,32 +589,23 @@ def find(cls, method_name):
 
 ########### MAIN EXECUTION #############
 
-square = square_new("sq", 3)
-circle = circle_new("ci", 2)
-square_density = call(square, "density", 5)
-circle_density = call(circle, "density", 5)
-sum_of_shapes = square_density + circle_density
-print(f"sum of density is {sum_of_shapes}")
+# square = square_new("sq", 3)
+# circle = circle_new("ci", 2)
+# square_density = call(square, "density", 5)
+# circle_density = call(circle, "density", 5)
+# sum_of_shapes = square_density + circle_density
+# print(f"sum of density is {sum_of_shapes}")
 
 
 def main():
-    # Dictionary of operations
-
-    # Parse arguments
-    parser = argparse.ArgumentParser(
-        prog="lgl_interpreter.py",
-        description="Runs our little German programming language.",
-        epilog="",
-    )
-    # nargs="+" means "at least one"
-    parser.add_argument("files", nargs="+", help="Specify lgl source files to run")
-    parser.add_argument(
-        "--trace", help="Log details of start and end times to FILENAME"
-    )
-    args = parser.parse_args()
-
+    
+    if cargs.trace:
+        assert isinstance(cargs.trace, str)
+        with open(cargs.trace, "w") as logfile:
+            logfile.write("id,function_name,event,timestamp\n")
+    
     # Run all files in order
-    for file in args.files:
+    for file in cargs.files:
         file = os.path.join(abspath, file)
         assert os.path.exists(file), f"File {file} does not exist"
         with open(file, "r") as source_file:
