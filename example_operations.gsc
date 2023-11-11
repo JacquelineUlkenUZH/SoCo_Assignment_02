@@ -59,4 +59,34 @@
   ["eintrag_setzen", ["variable_abrufen", "person"], "Alter", "26"],
   ["ausdrucken", ["variable_abrufen", "person"]],
 
-  ["ausdrucken", ""]]
+  ["ausdrucken", ""],
+  ["ausdrucken", "### Functions ###", "title"],
+  ["ausdrucken", "We create a function which calculates the area of a circle given its radius"],
+  ["variable_setzen", "kreis_flaeche",
+    ["funktion", ["radius"],
+        ["multiplizieren", 3.141593, ["potenzieren", ["variable_abrufen", "radius"], 2]]
+    ]
+  ],
+  ["ausdrucken", "Then we call the function with the value 2"],
+  ["ausdrucken", ["funktion_aufrufen", "kreis_flaeche", 2]],
+
+  ["ausdrucken", ""],
+  ["ausdrucken", "### Lists ###", "title"],
+  ["ausdrucken", "We create [1, 'Wort', 3.14], change 'Wort' to 'Zahl' and retrieve the second element"],
+  ["variable_setzen", "beispiel_liste",
+    ["liste", 3, 1, "Wort", 3.14]
+  ],
+  ["ausdrucken",
+    ["variable_abrufen", "beispiel_liste"]
+  ],
+  ["element_setzen",
+    ["variable_abrufen", "beispiel_liste"], 1, "Zahl"
+  ],
+  ["ausdrucken",
+    ["element_abrufen",
+      ["variable_abrufen", "beispiel_liste"], 1
+    ]
+  ],
+
+  ["ausdrucken", ""]
+]

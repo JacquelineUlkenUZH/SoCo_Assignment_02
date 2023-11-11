@@ -23,6 +23,7 @@ parser.add_argument(
 )
 cargs = parser.parse_args()
 
+
 ############
 # Comments #
 ############
@@ -281,12 +282,12 @@ def do_variable_abrufen(envs, args):
 # Arrays #
 ##########
 def do_liste(envs, args):
-    """Creates a list of the given length with the given elements. We surround the list with a tuple, to not trigger function calls.
+    """Creates a list of the given length with the given elements.
 
     Syntax:
-        ["liste", a, element_1, element_2, ...]
+        ["liste", length, element_1, element_2, ...]
     Returns:
-        [element_1, element_2, ... ]
+        ["liste", length, element_1, element_2, ...]
     """
 
     assert len(args) > 1
@@ -295,7 +296,7 @@ def do_liste(envs, args):
     assert len(elements) == length, f"Angegebene Länge stimmt nicht mit der Anzahl Elemente überein!"
     for element in elements:
         do(envs, element)
-    return elements
+    return ["liste", length] + elements
 
 
 def do_element_abrufen(envs, args):
@@ -304,20 +305,21 @@ def do_element_abrufen(envs, args):
     Syntax:
         ["element_abrufen", liste, index]
     Returns:
-        liste[0][idx]
+        liste[idx]
     """
 
     assert len(args) == 2
     lst = do(envs, args[0])
     idx = do(envs, args[1])
-    assert isinstance(lst, tuple) and isinstance(lst[0], list), f"{lst} ist keine Liste"
-    assert 0 <= idx <= len(lst[0]) - 1, f"Ungültiger index {idx}."
+    assert isinstance(lst, list), f"{lst} ist keine Liste"
+    assert lst[0] == "liste", f"{lst} ist keine Liste"
+    assert 0 <= idx <= len(lst) - 2, f"Ungültiger index {idx}."
 
-    return lst[0][idx]
+    return lst[2 + idx]
 
 
 def do_element_setzen(envs, args):
-    """Set the element at the given index of a liste.
+    """Set the element at the given index of a list.
 
     Syntax:
         ["element_setzen", liste, index, element]
@@ -328,18 +330,17 @@ def do_element_setzen(envs, args):
     assert len(args) == 3
     lst = do(envs, args[0])
     idx = do(envs, args[1])
+    assert isinstance(lst, list), f"{lst} ist keine Liste"
+    assert lst[0] == "liste", f"{lst} ist keine Liste"
     element = do(envs, args[2])
-    assert isinstance(lst, tuple) and isinstance(lst[0], list), f"{lst} ist keine Liste."
-    assert 0 <= idx <= len(lst[0]) - 1, f"Ungültiger index {idx}."
-    lst[0][idx] = element
+    lst[2 + idx] = element
+
     return None
 
 
 ################
 # Dictionaries #
 ################
-
-
 def do_lexikon(envs, args):
     """Creates a lexikon.
     Input example: [["a", 1], ["b", 2]]
@@ -349,8 +350,8 @@ def do_lexikon(envs, args):
     assert all([len(arg) == 2 for arg in args]), "Alle Argumente müssen Länge 2 haben: [key, value]"
     d = {}
     for arg in args:
-        key = arg[0]
-        value = arg[1]
+        key = do(envs, arg[0])
+        value = do(envs, arg[1])
         d[key] = value
     return d
 
@@ -389,10 +390,32 @@ def do_eintrag_setzen(envs, args):
     lexikon[key] = entry
 
 
+def do_lexika_vereinen(envs, args):
+    """Merge two dictionaries.
+
+    Syntax:
+        ["lexika_vereinen", lexikon1, lexikon2]
+    Returns:
+        lexikon1 | lexikon2
+    """
+
+    dict1 = do(envs, args[0])
+    dict2 = do(envs, args[1])
+
+    return dict1 | dict2
+
+
 #############
 # Functions #
 #############
 def do_funktion(envs, args):
+    """Create a new function
+
+    Syntax:
+        ["funktion", params, body]
+    Returns:
+        ["funktion", params, body]
+    """
     assert len(args) == 2
     params = args[0]
     body = args[1]
@@ -403,22 +426,135 @@ def do_funktion_aufrufen(envs, args):
     assert len(args) >= 1
     name = args[0]
     arguments = args[1:]
-    # eager evaluation
     values = [do(envs, arg) for arg in arguments]
 
     func = get_envs(envs, name)
     assert isinstance(func, list)
     assert func[0] == "funktion"
-    func_params = func[1]
-    assert len(func_params) == len(values)
+    params, body = func[1], func[2]
+    assert len(params) == len(values)
 
-    local_frame = dict(zip(func_params, values))
-    envs.append(local_frame)
-    body = func[2]
+    envs.append(dict(zip(params, values)))
     result = do(envs, body)
     envs.pop()
 
     return result
+
+
+###########
+# Objects #
+###########
+def do_leer(envs, args):
+    return None
+
+
+def do_klasse(envs, args):
+    """Creates a new class
+
+    Syntax:
+        ["klasse", name, vorfahre, ["funktion", params, body], {"methode1": methode1, "methode2": methode2, ...}]
+    Returns:
+        {"_classname": name,
+        "_parent": vorfahre,
+        "_new": ["funktion", params, body],
+        "methode1": methode1,
+        "method2": methode2,
+        ...}
+    """
+
+    assert len(args) == 4
+    classname = do(envs, args[0])
+    parent = do(envs, args[1])
+    new = args[2]
+    methods = do(envs, args[3])
+    assert isinstance(methods, dict), f"{methods} muss ein Lexikon sein"
+
+    cls_base = {
+        "_classname": classname,
+        "_parent": parent,
+        "_new": new
+    }
+
+    return cls_base | methods
+
+
+def do_objekt(envs, args):
+    """Creates an instance of a class
+
+    Syntax:
+        ["objekt", klasse, eigenschaft1, eigenschaft2, ...]
+    Returns:
+        {"_class": klasse,
+        "eigenschaft1": eigenschaft1,
+        "eigenschaft2": eigenschaft2,
+        ...}
+    """
+    assert len(args) >= 1
+    cls = do(envs, args[0])
+    assert isinstance(cls, dict), f"{cls} muss eine Klasse sein"
+    arguments = args[1:]
+    obj = do_funktion_aufrufen(envs, [cls["_new"]] + arguments)
+
+    return obj
+
+
+def do_methode(envs, args):
+    """Create a new method for a class. The body has access to the object by using the variable "instanz"
+
+    Syntax:
+        ["methode", params, body]
+    Returns:
+        ["methode", params, body]
+    """
+    assert len(args) == 2
+    params = args[0]
+    body = args[1]
+    return ["methode", params, body]
+
+
+def do_methode_aufrufen(envs, args):
+    """Call a method on a given instance.
+
+    Syntax:
+        ["methode", instance, method_name, argument1, argument2, ...]
+    Returns:
+        result of the method call
+    """
+    assert len(args) >= 2
+    instance = do(envs, args[0])
+    assert isinstance(instance, dict)
+    method_name = do(envs, args[1])
+    assert isinstance(method_name, str)
+    arguments = args[2:]
+
+    method = find_method(instance["_class"], method_name)
+    assert isinstance(method, list)
+    assert method[0] == "methode"
+
+    params = method[1].copy()
+    params.append("instanz")
+    body = method[2].copy()
+
+    values = [do(envs, arg) for arg in arguments]
+    values.append(instance)
+
+    assert len(params) == len(values)
+
+    envs.append(dict(zip(params, values)))
+    result = do(envs, body)
+    envs.pop()
+
+    return result
+
+
+def find_method(cls, method_name):
+    assert isinstance(cls, dict), f"{cls} ist keine Klasse."
+
+    if method_name in cls:
+        return cls[method_name]
+    else:
+        assert cls["_parent"], f"{method_name} ist nicht implementiert."
+        return find_method(cls["_parent"], method_name)
 
 
 ################
@@ -465,6 +601,7 @@ OPS = {
     if name.startswith("do_")
 }
 
+
 def trace(func):
     def wrapper(envs, expr):
         if not cargs.trace: return func(envs, expr)
@@ -477,13 +614,15 @@ def trace(func):
             result = func(envs, expr)
             logfile.write(f"{uid},{functionname},stop,{timestamp}\n")
             return result
+
     return wrapper
+
 
 @trace
 def do(envs, expr):
     # Lists trigger function calls
     if isinstance(expr, list):
-        assert expr[0] in OPS, f"Unknown operation {expr[0]}"
+        assert expr[0] in OPS, f"Unknown operation '{expr[0]}'."
         func = OPS[expr[0]]
         return func(envs, expr[1:])
     # Everything else returns itself
@@ -507,86 +646,6 @@ def set_envs(envs, name, value):
     envs[-1][name] = value
 
 
-### OOP ###
-
-
-def shape_new(name):
-    pass
-
-
-def shape_density(thing, weight):
-    area = call(thing, "area")
-    return weight / area
-
-
-Shape = {
-    "density": shape_density,
-    "_classname": "Shape",
-    "_parent": None
-}
-
-
-############## SQUARE #################
-
-
-def square_area(instance):
-    return instance["side"] ** 2
-
-
-Square = {
-    "area": square_area,
-    "_classname": "Square",
-    "_parent": Shape
-}
-
-
-def square_new(name, side):
-    square_obj = {
-        "name": name,
-        "side": side,
-        "_class": Square
-    }
-    return square_obj
-
-
-############## CIRCLE #################
-
-def circle_area(instance):
-    return instance['radius_length'] ** 2 * 3.14
-
-
-Circle = {
-    "area": circle_area,
-    "_classname": "Circle",
-    "_parent": Shape
-}
-
-
-def circle_new(name, radius):
-    circle_obj = {
-        "name": name,
-        "radius_length": radius,
-        "_class": Circle
-    }
-    return circle_obj
-
-
-########### HELPER FUNCTION #############
-def call(instance, method_name, *args):
-    method = find(instance["_class"], method_name)
-    return method(instance, *args)
-
-
-def find(cls, method_name):
-    if method_name in cls:
-        return cls[method_name]
-    else:
-        if cls["_parent"] == None:
-            raise NotImplementedError(f" {method_name} is not implemented")
-        else:
-            return find(cls["_parent"], method_name)
-
-
 ########### MAIN EXECUTION #############
 
 # square = square_new("sq", 3)
@@ -598,12 +657,11 @@ def find(cls, method_name):
 
 
 def main():
-    
     if cargs.trace:
         assert isinstance(cargs.trace, str)
         with open(cargs.trace, "w") as logfile:
             logfile.write("id,function_name,event,timestamp\n")
-    
+
     # Run all files in order
     for file in cargs.files:
         file = os.path.join(abspath, file)
