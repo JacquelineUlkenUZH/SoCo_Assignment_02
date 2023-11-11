@@ -607,17 +607,18 @@ def trace(func):
     def wrapper(envs, expr):
         if not cargs.trace: return func(envs, expr)
         if not isinstance(expr, list): return func(envs, expr)
+        uid = str(uuid.uuid4().fields[0])[:6]
+        functionname = expr[0]
+        # time_start = datetime.now()
+        time_start = time.perf_counter()
         with open(cargs.trace, "a") as logfile:
-            uid = str(uuid.uuid4().fields[0])[:6]
-            functionname = expr[0]
-            time_start = datetime.now()
-            # time_start = time.perf_counter()
             logfile.write(f"{uid},{functionname},start,{time_start}\n")
-            result = func(envs, expr)
-            time_stop = datetime.now()
-            # time_stop = time.perf_counter()
+        result = func(envs, expr)
+        # time_stop = datetime.now()
+        time_stop = time.perf_counter()
+        with open(cargs.trace, "a") as logfile:
             logfile.write(f"{uid},{functionname},stop,{time_stop}\n")
-            return result
+        return result
 
     return wrapper
 
@@ -628,7 +629,8 @@ def do(envs, expr):
     if isinstance(expr, list):
         assert expr[0] in OPS, f"Unknown operation '{expr[0]}'."
         func = OPS[expr[0]]
-        return func(envs, expr[1:])
+        result = func(envs, expr[1:])
+        return result
     # Everything else returns itself
     else:
         return expr
@@ -651,14 +653,6 @@ def set_envs(envs, name, value):
 
 
 ########### MAIN EXECUTION #############
-
-# square = square_new("sq", 3)
-# circle = circle_new("ci", 2)
-# square_density = call(square, "density", 5)
-# circle_density = call(circle, "density", 5)
-# sum_of_shapes = square_density + circle_density
-# print(f"sum of density is {sum_of_shapes}")
-
 
 def main():
     if cargs.trace:

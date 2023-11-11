@@ -27,10 +27,9 @@ for line in lines[1:]:
     line = line.strip().split(",")
     # Convert "2023-11-11 10:33:55.291360" back to datetime
     # or if it's a float, just convert it to float
-    try: 
-        timestamp = datetime.strptime(line[3], "%Y-%m-%d %H:%M:%S.%f")
-    except ValueError:
-        timestamp = float(line[3])
+    
+    # timestamp = datetime.strptime(line[3], "%Y-%m-%d %H:%M:%S.%f")
+    timestamp = float(line[3])
 
     # First time function call is seen
     if not line[1] in calls: 
@@ -40,7 +39,7 @@ for line in lines[1:]:
         calls[line[1]][line[0]] = timestamp
     # Second time uid is seen and function is stopped
     elif line[2] == "stop": 
-        calls[line[1]][line[0]] = (timestamp - calls[line[1]][line[0]]).total_seconds()
+        calls[line[1]][line[0]] = (timestamp - calls[line[1]][line[0]])
 
 # Table with f-strings
 table = """
