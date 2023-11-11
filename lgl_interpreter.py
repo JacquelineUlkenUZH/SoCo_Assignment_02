@@ -20,8 +20,9 @@ parser = argparse.ArgumentParser(
 # nargs="+" means "at least one"
 parser.add_argument("files", nargs="+", help="Specify lgl source files to run")
 parser.add_argument(
-    "--trace", help="Log details of start and end times to FILENAME"
+    "-t", "--trace", help="Log details of start and end times to FILENAME"
 )
+parser.add_argument("-d", "--usedatetime", action="store_true", help="Use datetime instead of perf_counter to trace execution times (not recommended)")
 cargs = parser.parse_args()
 
 
@@ -253,31 +254,17 @@ def do_oder(envs, args):
 # Variables #
 #############
 def do_variable_setzen(envs, args):
-    assert len(args) == 2 or len(args) == 3
+    assert len(args) == 2
     assert isinstance(args[0], str)
     var_name = args[0]
     value = do(envs, args[1])
-    if isinstance(value, str) and value.startswith("[") and value.endswith("]"):
-        value = eval(value)  # Convert string to list
-    if len(args) == 3:
-        assert isinstance(args[2], int)
-        liste = get_envs(envs, var_name)
-        index = args[2]
-        liste[index] = value
-        return value
     set_envs(envs, var_name, value)
     return value
 
 
 def do_variable_abrufen(envs, args):
-    assert len(args) == 1 or len(args) == 2
-    if len(args) == 2:
-        assert isinstance(args[1], int)
-        liste = get_envs(envs, args[0])
-        index = args[1]
-        return liste[index]
+    assert len(args) == 1
     return get_envs(envs, args[0])
-
 
 ##########
 # Arrays #
@@ -593,32 +580,13 @@ def do_abfolge(envs, args):
     return None
 
 
-def do_solange(envs, args, previousresult=None):
-    # Passing previousresult recursively because otherwise last iteration would be None
-    # arg[0] = [Wert1] oder [Wert1, Vergleich, Wert2]
-    # arg[1] = Liste der Abfolge
-    assert len(args) == 2
-    assert len(args[0]) == 1 or len(args[0]) == 3
-
-    teststr = f"{do(envs, args[0][0])}"
-    if len(args[0]) == 3:
-        assert isinstance(args[0][1], str)
-        teststr += f" {do(envs, args[0][1])} {do(envs, args[0][2])}"
-
-    if eval(teststr):
-        previousresult = do_abfolge(envs, args[1])
-        return do_solange(envs, args, previousresult)
-    else:
-        return previousresult
-
-
-def do_solange_alt(envs, args):
+def do_solange(envs, args):
     assert len(args) == 2
     condition = args[0]
     operation = args[1]
     if do(envs, condition):
         do(envs, operation)
-        do_solange_alt(envs, [condition, operation])
+        do_solange(envs, [condition, operation])
     return None
 
 
@@ -630,18 +598,23 @@ OPS = {
 
 
 def trace(func):
+    """Wraps a function to log its start and end times to a file.
+
+    Syntax:
+        Use as decorator: @trace
+    Behaviour:
+        Wraps timer around the function call and writes a file.
+    """
     def wrapper(envs, expr):
         if not cargs.trace: return func(envs, expr)
         if not isinstance(expr, list): return func(envs, expr)
         uid = str(uuid.uuid4().fields[0])[:6]
         functionname = expr[0]
-        # time_start = datetime.now()
-        time_start = time.perf_counter()
+        time_start = time.perf_counter() if not cargs.usedatetime else datetime.now()
         with open(cargs.trace, "a") as logfile:
             logfile.write(f"{uid},{functionname},start,{time_start}\n")
         result = func(envs, expr)
-        # time_stop = datetime.now()
-        time_stop = time.perf_counter()
+        time_stop = time.perf_counter() if not cargs.usedatetime else datetime.now()
         with open(cargs.trace, "a") as logfile:
             logfile.write(f"{uid},{functionname},stop,{time_stop}\n")
         return result

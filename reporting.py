@@ -29,7 +29,8 @@ for line in lines[1:]:
     # or if it's a float, just convert it to float
     
     # timestamp = datetime.strptime(line[3], "%Y-%m-%d %H:%M:%S.%f")
-    timestamp = float(line[3])
+    isdatetime = ":" in line[3]
+    timestamp = float(line[3]) if not isdatetime else datetime.strptime(line[3], "%Y-%m-%d %H:%M:%S.%f")
 
     # First time function call is seen
     if not line[1] in calls: 
@@ -39,7 +40,8 @@ for line in lines[1:]:
         calls[line[1]][line[0]] = timestamp
     # Second time uid is seen and function is stopped
     elif line[2] == "stop": 
-        calls[line[1]][line[0]] = (timestamp - calls[line[1]][line[0]])
+        delta = (timestamp - calls[line[1]][line[0]]) if not isdatetime else (timestamp - calls[line[1]][line[0]]).total_seconds()
+        calls[line[1]][line[0]] = delta
 
 # Table with f-strings
 table = """

@@ -4,12 +4,13 @@ Assignment 2 for the course Software Construction 23HS 22BI0004.
 These are the files we hand in:
 - `lgl_interpreter.py` interprets our implementation of the Little German Language, LGL.
 - `example_operations.gsc` a rather beautifully formatted showcase of our lovely programming language.
-- `example_class.gsc`
-- `example_trace.gsc`
-- `reporting.py`
+- `example_class.gsc` showcases classes and objects
+- `example_trace.gsc` showcases tracing execution times to a logfile.
+- `reporting.py` consumes said logfile and reports execution time deltas in tabular form.
 
 ## Getting started
-usage: lgl_interpreter.py \[-h\] \[--trace TRACE\] files \[files ...\]
+### Interpreter
+usage: lgl_interpreter.py \[-h\] \[--trace TRACE\] \[--usedatetime\] files \[files ...\]
 
 Runs our little germal programming language.
 
@@ -17,8 +18,23 @@ positional arguments:
   files          Specify lgl source files to run
 
 options:
-  -h, --help     show this help message and exit
-  --trace TRACE  Log details of start and end times to FILENAME
+  -h, --help            show this help message and exit
+  -t TRACE, --trace TRACE
+                        Log details of start and end times to FILENAME
+  -d, --usedatetime     Use datetime instead of perf_counter to trace
+                        execution times (not recommended)
+
+### Reporting
+
+usage: reporting.py \[-h\] file
+
+Takes tracing from lgl_interpreter.py and generates a report
+
+positional arguments:
+  file        Specify lgl log files to report on
+
+options:
+  -h, --help  show this help message and exit
 
 Command-line arguments are parsed using `argparse`.
 
@@ -41,7 +57,28 @@ Interesting implementation details:
 - We implement repetition using recursive function calls.
 - We pass results recursively, because otherwise the last iteration would return None (because it doesn't run).
 
-### Arrays with `do_varsetzen` and `do_varabrufen`
-We implemented arrays as normal variables. That means both `do_varsetzen` and `do_varabrufen` now accept an additional **optional parameter to specify the index** of an array.
+### Arrays
 
-We detect arrays by checking whether we were given a string starting with "\[" and ending with "\]". We then convert that string to an array using `eval()`.
+Arrays of fixed length are set by setting a variable with the list as content. The first argument is the length, then the content of the elements.
+
+```json
+["variable_setzen", "beispiel_liste",
+    ["liste", 3, 1, "Wort", 3.14]
+]
+
+["ausdrucken",
+    ["variable_abrufen", "beispiel_liste"]
+]
+# prints ['liste', 3, 1, 'Wort', 3.14]
+```
+
+### Tracing
+
+We implemented the tracing as a decorator `@trace` function that wraps the function `do()`. 
+
+By default, **we use `time.perf_counter()` to measure performance**. If you wish to use `datetime.datetime.now()`, the option is available by setting an additional `--usedatetime` flag when using `lgl_interpreter.py` with `--trace`. 
+
+When tracing, we **write output immediately to the file**. A more mature implementation should write the file at the end of the tracing, so as not to add extra execution time.
+
+`reporting.py` automatically detects and properly handles either kind of timestamp.
+
