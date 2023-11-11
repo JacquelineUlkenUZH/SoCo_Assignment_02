@@ -494,9 +494,35 @@ def do_objekt(envs, args):
     cls = do(envs, args[0])
     assert isinstance(cls, dict), f"{cls} muss eine Klasse sein"
     arguments = args[1:]
-    obj = do_funktion_aufrufen(envs, [cls["_new"]] + arguments)
+    new = cls["_new"]
+    assert isinstance(new, list)
+    assert new[0] == "konstrukteur"
+    params = new[1].copy()
+    body = new[2].copy()
+    values = [do(envs, arg) for arg in arguments]
+    assert len(params) == len(values)
+
+    envs.append(dict(zip(params, values)))
+    obj = do(envs, body)
+    obj["_class"] = cls
+    envs.pop()
 
     return obj
+
+
+def do_konstrukteur(envs, args):
+    """Create a constructor for a class.
+
+    Syntax:
+        ["konstrukteur", params, body]
+    Returns:
+        ["konstrukteur", params, body]
+    """
+    assert len(args) == 2
+    params = args[0]
+    body = args[1]
+    assert body[0] == "lexikon", f"Konstrukteur muss ein Lexikon mit Klassenattributen zurückgeben."
+    return ["konstrukteur", params, body]
 
 
 def do_methode(envs, args):
@@ -651,15 +677,6 @@ def set_envs(envs, name, value):
 
 
 ########### MAIN EXECUTION #############
-
-# square = square_new("sq", 3)
-# circle = circle_new("ci", 2)
-# square_density = call(square, "density", 5)
-# circle_density = call(circle, "density", 5)
-# sum_of_shapes = square_density + circle_density
-# print(f"sum of density is {sum_of_shapes}")
-
-
 def main():
     if cargs.trace:
         assert isinstance(cargs.trace, str)

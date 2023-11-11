@@ -1,16 +1,11 @@
 ["abfolge",
-
-    ["variable_setzen", "shape_new",
-        ["funktion", ["name"],
-            ["lexikon",
-                ["name", ["variable_abrufen", "name"]],
-                ["_class", ["variable_abrufen", "Shape"]]
-            ]
-        ]
-    ],
-
     ["variable_setzen", "Shape",
-        ["klasse", "Shape", ["leer"], "shape_new",
+        ["klasse", "Shape", ["leer"],
+            ["konstrukteur", ["name"],
+                ["lexikon",
+                    ["name", ["variable_abrufen", "name"]]
+                ]
+            ],
             ["lexikon",
                 ["density",
                     ["methode", ["weight"],
@@ -21,18 +16,14 @@
         ]
     ],
 
-    ["variable_setzen", "square_new",
-        ["funktion", ["name", "side"],
-            ["lexikon",
-                ["name", ["variable_abrufen", "name"]],
-                ["side", ["variable_abrufen", "side"]],
-                ["_class", ["variable_abrufen", "Square"]]
-            ]
-        ]
-    ],
-
     ["variable_setzen", "Square",
-        ["klasse", "Square", ["variable_abrufen", "Shape"], "square_new",
+        ["klasse", "Square", ["variable_abrufen", "Shape"],
+            ["konstrukteur", ["name", "side"],
+                ["lexikon",
+                    ["name", ["variable_abrufen", "name"]],
+                    ["side", ["variable_abrufen", "side"]]
+                ]
+            ],
             ["lexikon",
                 ["area",
                     ["methode", [],
@@ -43,18 +34,14 @@
         ]
     ],
 
-    ["variable_setzen", "circle_new",
-        ["funktion", ["name", "radius"],
-            ["lexikon",
-                ["name", ["variable_abrufen", "name"]],
-                ["radius", ["variable_abrufen", "radius"]],
-                ["_class", ["variable_abrufen", "Circle"]]
-            ]
-        ]
-    ],
-
     ["variable_setzen", "Circle",
-        ["klasse", "Circle", ["variable_abrufen", "Shape"], "circle_new",
+        ["klasse", "Circle", ["variable_abrufen", "Shape"],
+            ["konstrukteur", ["name", "radius"],
+                ["lexikon",
+                    ["name", ["variable_abrufen", "name"]],
+                    ["radius", ["variable_abrufen", "radius"]]
+                ]
+            ],
             ["lexikon",
                 ["area",
                     ["methode", [],
