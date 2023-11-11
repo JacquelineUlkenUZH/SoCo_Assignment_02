@@ -2,7 +2,8 @@ import argparse
 import json
 import os
 import uuid
-import datetime
+from datetime import datetime
+import time
 
 ###################
 # Parse arguments #
@@ -472,10 +473,13 @@ def trace(func):
         with open(cargs.trace, "a") as logfile:
             uid = str(uuid.uuid4().fields[0])[:6]
             functionname = expr[0]
-            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-            logfile.write(f"{uid},{functionname},start,{timestamp}\n")
+            # time_start = datetime.now()
+            time_start = time.perf_counter()
+            logfile.write(f"{uid},{functionname},start,{time_start}\n")
             result = func(envs, expr)
-            logfile.write(f"{uid},{functionname},stop,{timestamp}\n")
+            # time_stop = datetime.now()
+            time_stop = time.perf_counter()
+            logfile.write(f"{uid},{functionname},stop,{time_stop}\n")
             return result
     return wrapper
 
