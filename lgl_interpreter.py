@@ -610,12 +610,12 @@ def trace(func):
         with open(cargs.trace, "a") as logfile:
             uid = str(uuid.uuid4().fields[0])[:6]
             functionname = expr[0]
-            # time_start = datetime.now()
-            time_start = time.perf_counter()
+            time_start = datetime.now()
+            # time_start = time.perf_counter()
             logfile.write(f"{uid},{functionname},start,{time_start}\n")
             result = func(envs, expr)
-            # time_stop = datetime.now()
-            time_stop = time.perf_counter()
+            time_stop = datetime.now()
+            # time_stop = time.perf_counter()
             logfile.write(f"{uid},{functionname},stop,{time_stop}\n")
             return result
 
