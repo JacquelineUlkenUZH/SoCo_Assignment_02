@@ -22,7 +22,8 @@ parser.add_argument("files", nargs="+", help="Specify lgl source files to run")
 parser.add_argument(
     "-t", "--trace", help="Log details of start and end times to FILENAME"
 )
-parser.add_argument("-d", "--usedatetime", action="store_true", help="Use datetime instead of perf_counter to trace execution times (not recommended)")
+parser.add_argument("-d", "--usedatetime", action="store_true",
+                    help="Use datetime instead of perf_counter to trace execution times (not recommended)")
 cargs = parser.parse_args()
 
 
@@ -30,13 +31,29 @@ cargs = parser.parse_args()
 # Comments #
 ############
 def do_kommentar(envs, args):
-    """Ignore any instructions.
+    """Ignores any instructions.
 
     Syntax:
         ["kommentar", "Dies ist ein Kommentar."]
     Returns:
         None
     """
+
+    return None
+
+
+#############
+# None Type #
+#############
+def do_leer(envs, args):
+    """None
+
+    Syntax:
+        ["leer"]
+    Returns:
+        None
+    """
+    assert len(args) == 0, f"Ungültige Anzahl Argumente. Erwartet: 0, Gegeben: {len(args)}."
 
     return None
 
@@ -54,7 +71,8 @@ def do_ausdrucken(envs, args):
     Returns:
         None
     """
-    assert len(args) > 0
+    assert len(args) > 0, f"Ungültige Anzahl Argumente. Erwartet mehr als 0 Argumente."
+
     nobr = "nobr" in args
     title = "title" in args
     for arg in args:
@@ -67,6 +85,7 @@ def do_ausdrucken(envs, args):
             print(result, end="")
         else:
             print(result)
+
     return None
 
 
@@ -74,46 +93,62 @@ def do_ausdrucken(envs, args):
 # Arithmetic #
 ##############
 def do_addieren(envs, args):
-    """Add two numbers.
+    """Adds two numbers.
 
     Syntax:
         ["addieren", a, b]
     Returns:
         a + b
     """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
 
-    assert len(args) == 2
     return do(envs, args[0]) + do(envs, args[1])
 
 
+def do_summe(envs, args):
+    """Calculates the sum of the given numbers.
+
+    Syntax:
+        ["summe", a, b, c, ...]
+    Returns:
+        a + b + c + ...
+    """
+
+    s = 0
+    for arg in args:
+        s += do(envs, arg)
+
+    return s
+
+
 def do_subtrahieren(envs, args):
-    """Subtract the second from the first number
+    """Subtracts the second from the first number.
 
     Syntax:
         ["subtrahieren", a, b]
     Returns:
         a - b
     """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
 
-    assert len(args) == 2
     return do(envs, args[0]) - do(envs, args[1])
 
 
 def do_multiplizieren(envs, args):
-    """Multiplies two numbers
+    """Multiplies the two numbers.
 
     Syntax:
         ["multiplizieren", a, b]
     Returns:
         a * b
     """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
 
-    assert len(args) == 2
     return do(envs, args[0]) * do(envs, args[1])
 
 
 def do_produkt(envs, args):
-    """Calculates the product of the given numbers
+    """Calculates the product of the given numbers.
 
     Syntax:
         ["produkt", a, b, c, ...]
@@ -121,35 +156,36 @@ def do_produkt(envs, args):
         a * b * c * ...
     """
 
-    assert len(args) > 1
-    product = 1
+    p = 1
     for arg in args:
-        product *= do(envs, arg)
-    return product
+        p *= do(envs, arg)
+
+    return p
 
 
 def do_dividieren(envs, args):
-    """Divide the first number by the second number
+    """Divides the first number by the second number.
 
     Syntax:
         ["dividieren", a, b]
     Returns:
         a / b
     """
-    assert len(args) == 2
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
+
     return do(envs, args[0]) / do(envs, args[1])
 
 
 def do_potenzieren(envs, args):
-    """Raises the first number to the second number's power
+    """Raises the first number to the second number's power.
 
     Syntax:
         ["potenzieren", a, b]
     Returns:
         a ** b
     """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
 
-    assert len(args) == 2
     return do(envs, args[0]) ** do(envs, args[1])
 
 
@@ -161,8 +197,8 @@ def do_absolutwert(envs, args):
     Returns:
         abs(a)
     """
+    assert len(args) == 1, f"Ungültige Anzahl Argumente. Erwartet: 1, Gegeben: {len(args)}."
 
-    assert len(args) == 1
     return abs(do(envs, args[0]))
 
 
@@ -170,29 +206,42 @@ def do_absolutwert(envs, args):
 # Comparison #
 ##############
 def do_gleich(envs, args):
-    """Equates two expressions
+    """Equals
 
     Syntax:
         ["gleich", a, b]
     Returns:
         a == b
     """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
 
-    assert len(args) == 2
     return do(envs, args[0]) == do(envs, args[1])
 
 
 def do_kleiner_als(envs, args):
-    """Smaller than
+    """Less than
 
     Syntax:
         ["kleiner_als", a, b]
     Returns:
         a < b
     """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
 
-    assert len(args) == 2
     return do(envs, args[0]) < do(envs, args[1])
+
+
+def do_kleiner_gleich(envs, args):
+    """Less or equal
+
+    Syntax:
+        ["kleiner_gleich", a, b]
+    Returns:
+        a <= b
+    """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
+
+    return do(envs, args[0]) <= do(envs, args[1])
 
 
 def do_groesser_als(envs, args):
@@ -203,24 +252,63 @@ def do_groesser_als(envs, args):
     Returns:
         a > b
     """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
 
-    assert len(args) == 2
     return do(envs, args[0]) > do(envs, args[1])
+
+
+def do_groesser_gleich(envs, args):
+    """Greater or equal
+
+    Syntax:
+        ["groesser_gleich", a, b]
+    Returns:
+        a >= b
+    """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
+
+    return do(envs, args[0]) >= do(envs, args[1])
 
 
 #########
 # Logic #
 #########
+def do_wahr(envs, args):
+    """True
+
+    Syntax:
+        ["wahr"]
+    Returns:
+        True
+    """
+    assert len(args) == 0, f"Ungültige Anzahl Argumente. Erwartet: 0, Gegeben: {len(args)}."
+
+    return True
+
+
+def do_falsch(envs, args):
+    """False
+
+    Syntax:
+        ["falsch"]
+    Returns:
+        False
+    """
+    assert len(args) == 0, f"Ungültige Anzahl Argumente. Erwartet: 0, Gegeben: {len(args)}."
+
+    return False
+
+
 def do_nicht(envs, args):
-    """Logical not
+    """Logical not.
 
     Syntax:
         ["nicht", a]
     Returns:
         not a
     """
+    assert len(args) == 1, f"Ungültige Anzahl Argumente. Erwartet: 1, Gegeben: {len(args)}."
 
-    assert len(args) == 1
     return not do(envs, args[0])
 
 
@@ -232,8 +320,8 @@ def do_und(envs, args):
     Returns:
         a and b
     """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
 
-    assert len(args) == 2
     return do(envs, args[0]) and do(envs, args[1])
 
 
@@ -243,10 +331,10 @@ def do_oder(envs, args):
     Syntax:
         ["oder", a, b]
     Returns:
-        a oder b
+        a or b
     """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
 
-    assert len(args) == 2
     return do(envs, args[0]) or do(envs, args[1])
 
 
@@ -254,17 +342,35 @@ def do_oder(envs, args):
 # Variables #
 #############
 def do_variable_setzen(envs, args):
-    assert len(args) == 2
-    assert isinstance(args[0], str)
+    """Sets a variable in the environment.
+
+    Syntax:
+        ["variable_setzen", name, wert]
+    Returns:
+        None
+    """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
+
     var_name = args[0]
+    assert isinstance(var_name, str), f"Variablenname muss eine Zeichenfolge sein."
     value = do(envs, args[1])
     set_envs(envs, var_name, value)
-    return value
+
+    return None
 
 
 def do_variable_abrufen(envs, args):
-    assert len(args) == 1
+    """Gets the value of a variable.
+
+    Syntax:
+        ["variable_abrufen", name]
+    Returns:
+        value
+    """
+    assert len(args) == 1, f"Ungültige Anzahl Argumente. Erwartet: 1, Gegeben: {len(args)}."
+
     return get_envs(envs, args[0])
+
 
 ##########
 # Arrays #
@@ -277,49 +383,55 @@ def do_liste(envs, args):
     Returns:
         ["liste", length, element_1, element_2, ...]
     """
+    assert len(args) > 1, f"Ungültige Anzahl Argumente. Erwartet mindestens 2 Argumente."
 
-    assert len(args) > 1
     length = do(envs, args[0])
     elements = args[1:]
     assert len(elements) == length, f"Angegebene Länge stimmt nicht mit der Anzahl Elemente überein!"
+
     for element in elements:
         do(envs, element)
+
     return ["liste", length] + elements
 
 
 def do_element_abrufen(envs, args):
-    """Get the element at the given index of a liste.
+    """Gets the element at the given index of a list.
 
     Syntax:
         ["element_abrufen", liste, index]
     Returns:
         liste[idx]
     """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
 
-    assert len(args) == 2
     lst = do(envs, args[0])
+    assert isinstance(lst, list), f"{lst} ist keine Liste!"
+    assert lst[0] == "liste", f"{lst} ist keine Liste!"
+
     idx = do(envs, args[1])
-    assert isinstance(lst, list), f"{lst} ist keine Liste"
-    assert lst[0] == "liste", f"{lst} ist keine Liste"
-    assert 0 <= idx <= len(lst) - 2, f"Ungültiger index {idx}."
+    assert 0 <= idx <= lst[1], f"Ungültiger index {idx}."
 
     return lst[2 + idx]
 
 
 def do_element_setzen(envs, args):
-    """Set the element at the given index of a list.
+    """Sets the element at the given index of a list.
 
     Syntax:
         ["element_setzen", liste, index, element]
     Returns:
         None
     """
+    assert len(args) == 3, f"Ungültige Anzahl Argumente. Erwartet: 3, Gegeben: {len(args)}."
 
-    assert len(args) == 3
     lst = do(envs, args[0])
+    assert isinstance(lst, list), f"{lst} ist keine Liste!"
+    assert lst[0] == "liste", f"{lst} ist keine Liste!"
+
     idx = do(envs, args[1])
-    assert isinstance(lst, list), f"{lst} ist keine Liste"
-    assert lst[0] == "liste", f"{lst} ist keine Liste"
+    assert 0 <= idx <= lst[1], f"Ungültiger index {idx}."
+
     element = do(envs, args[2])
     lst[2 + idx] = element
 
@@ -330,52 +442,63 @@ def do_element_setzen(envs, args):
 # Dictionaries #
 ################
 def do_lexikon(envs, args):
-    """Creates a lexikon.
-    Input example: [["a", 1], ["b", 2]]
-    Output: {"a": 1, "b": 2}
+    """Creates a dictionary with the given key-value pairs.
+
+    Syntax:
+        ["lexikon", [etikett1, eintrag1], [etikett2, eintrag2], ...]
+    Returns:
+        {etikett1: eintrag1, etikett2: eintrag2, ...}
     """
-    assert len(args) >= 1, "Zu wenig Argumente für das Lexikon"
-    assert all([len(arg) == 2 for arg in args]), "Alle Argumente müssen Länge 2 haben: [key, value]"
+    assert len(args) > 0, f"Ungültige Anzahl Argumente. Erwartet mindestens 1 Argument."
+    assert all([len(arg) == 2 for arg in args]), f"Alle Argumente müssen Länge 2 haben: [etikett, eintrag]."
+
     d = {}
     for arg in args:
         key = do(envs, arg[0])
         value = do(envs, arg[1])
         d[key] = value
+
     return d
 
 
 def do_eintrag_abrufen(envs, args):
-    """Get the entry at the given key of a lexikon.
+    """Gets the entry at the given key of a dictionary.
 
     Syntax:
         ["element_abrufen", lexikon, etikett]
     Returns:
-        entry at the given key
+        lexikon[etikett]
     """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
 
-    assert len(args) == 2
-    lexikon = do(envs, args[0])
+    dictionary = do(envs, args[0])
+    assert isinstance(dictionary, dict), f"{dictionary} ist kein Lexikon!"
+
     key = do(envs, args[1])
-    assert isinstance(lexikon, dict), f"{lexikon} ist kein Lexikon."
-    return lexikon[key]
+
+    return dictionary[key]
 
 
 def do_eintrag_setzen(envs, args):
-    """Set the entry at the given index of a lexikon.
+    """Sets the entry at the given key of a dictionary.
 
     Syntax:
         ["eintrag_setzen", lexikon, etikett, eintrag]
     Returns:
         None
     """
+    assert len(args) == 3, f"Ungültige Anzahl Argumente. Erwartet: 3, Gegeben: {len(args)}."
 
-    assert len(args) == 3
-    lexikon = do(envs, args[0])
+    dictionary = do(envs, args[0])
+    assert isinstance(dictionary, dict), f"{dictionary} ist kein Lexikon!"
+
     key = do(envs, args[1])
+    assert key in dictionary, f"Etikett {key} existiert nicht im Lexikon!"
+
     entry = do(envs, args[2])
-    assert isinstance(lexikon, dict), f"{lexikon} ist kein Lexikon."
-    assert key in lexikon, f"{key} existiert nicht im Lexikon."
-    lexikon[key] = entry
+    dictionary[key] = entry
+
+    return None
 
 
 def do_lexika_vereinen(envs, args):
@@ -386,9 +509,13 @@ def do_lexika_vereinen(envs, args):
     Returns:
         lexikon1 | lexikon2
     """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
 
     dict1 = do(envs, args[0])
+    assert isinstance(dict1, dict), f"{dict1} ist kein Lexikon!"
+
     dict2 = do(envs, args[1])
+    assert isinstance(dict2, dict), f"{dict2} ist kein Lexikon!"
 
     return dict1 | dict2
 
@@ -397,32 +524,46 @@ def do_lexika_vereinen(envs, args):
 # Functions #
 #############
 def do_funktion(envs, args):
-    """Create a new function
+    """Creates a new function.
 
     Syntax:
         ["funktion", params, body]
     Returns:
         ["funktion", params, body]
     """
-    assert len(args) == 2
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
+
     params = args[0]
     body = args[1]
+
     return ["funktion", params, body]
 
 
 def do_funktion_aufrufen(envs, args):
-    assert len(args) >= 1
-    name = args[0]
+    """Executes a given function with the given arguments.
+
+    Syntax:
+        ["funktion_aufrufen", name, arg1, arg2, ...]
+    Returns:
+        name(arg1, arg2, ...)
+    """
+
+    assert len(args) > 0, f"Ungültige Anzahl Argumente. Erwartet mindestens 1 Argument."
+
+    name = do(envs, args[0])
+    func = get_envs(envs, name)
+    assert isinstance(func, list), f"{func} ist keine Funktion!"
+    assert func[0] == "funktion", f"{func} ist keine Funktion!"
+
     arguments = args[1:]
     values = [do(envs, arg) for arg in arguments]
-
-    func = get_envs(envs, name)
-    assert isinstance(func, list)
-    assert func[0] == "funktion"
-    params, body = func[1], func[2]
-    assert len(params) == len(values)
+    params = func[1]
+    assert len(params) == len(
+        values), f"Ungültige Anzahl Argumente für Funktion {name}. Erwartet {len(params)} Argumente."
 
     envs.append(dict(zip(params, values)))
+
+    body = func[2]
     result = do(envs, body)
     envs.pop()
 
@@ -432,33 +573,51 @@ def do_funktion_aufrufen(envs, args):
 ###########
 # Objects #
 ###########
-def do_leer(envs, args):
-    return None
+def is_lgl_class(cls):
+    """Helper function to determine if something is an LGL class."""
+
+    if not isinstance(cls, dict):
+        return False
+    if "_classname" not in cls or not isinstance(cls["_classname"], str):
+        return False
+    if "_new" not in cls or not (cls["_new"][0] == "konstrukteur"):
+        return False
+    if "_parent" not in cls or not (cls["_parent"] is None or is_lgl_class(cls["_parent"])):
+        return False
+
+    return True
 
 
 def do_klasse(envs, args):
-    """Creates a new class
+    """Creates a new class.
 
     Syntax:
-        ["klasse", name, vorfahre, ["funktion", params, body], {"methode1": methode1, "methode2": methode2, ...}]
+        ["klasse", name, vorfahre, ["konstrukteur", params, body], {"methode1": ["methode", params1, body1], "methode2": ["methode", params2, body2], ...}]
     Returns:
         {"_classname": name,
         "_parent": vorfahre,
-        "_new": ["funktion", params, body],
-        "methode1": methode1,
-        "method2": methode2,
+        "_new": ["konstrukteur", params, body],
+        "methode1":  ["methode", params1, body1],
+        "method2": ["methode", params2, body2],
         ...}
     """
+    assert len(args) == 4, f"Ungültige Anzahl Argumente. Erwartet: 4, Gegeben: {len(args)}."
 
-    assert len(args) == 4
-    classname = do(envs, args[0])
+    name = do(envs, args[0])
+    assert isinstance(name, str), f"Klassennname muss eine Zeichenfolge sein."
+
     parent = do(envs, args[1])
-    new = args[2]
+    assert parent is None or is_lgl_class(parent), f'Vorfahre muss entweder ["leer"] oder eine Klasse sein.'
+
+    new = do(envs, args[2])
+    assert isinstance(new, list), f"{new} ist kein Konstrukteur!"
+    assert new[0] == "konstrukteur", f"{new} ist kein Konstrukteur!"
+
     methods = do(envs, args[3])
-    assert isinstance(methods, dict), f"{methods} muss ein Lexikon sein"
+    assert isinstance(methods, dict), f"{methods} ist kein Lexikon!"
 
     cls_base = {
-        "_classname": classname,
+        "_classname": name,
         "_parent": parent,
         "_new": new
     }
@@ -466,8 +625,19 @@ def do_klasse(envs, args):
     return cls_base | methods
 
 
+def is_lgl_object(obj):
+    """Helper function to determine if something is an LGL object."""
+
+    if not isinstance(obj, dict):
+        return False
+    if "_class" not in obj or not is_lgl_class(obj["_class"]):
+        return False
+
+    return True
+
+
 def do_objekt(envs, args):
-    """Creates an instance of a class
+    """Creates an instance of a class.
 
     Syntax:
         ["objekt", klasse, eigenschaft1, eigenschaft2, ...]
@@ -477,92 +647,68 @@ def do_objekt(envs, args):
         "eigenschaft2": eigenschaft2,
         ...}
     """
-    assert len(args) >= 1
+    assert len(args) > 0, f"Ungültige Anzahl Argumente. Erwartet mindestens 1 Argument."
+
     cls = do(envs, args[0])
-    assert isinstance(cls, dict), f"{cls} muss eine Klasse sein"
-    arguments = args[1:]
+    assert is_lgl_class(cls), f"{cls} ist keine Klasse!"
+
     new = cls["_new"]
-    assert isinstance(new, list)
-    assert new[0] == "konstrukteur"
-    params = new[1].copy()
-    body = new[2].copy()
+    assert isinstance(new, list), f"{new} ist kein Konstrukteur!"
+    assert new[0] == "konstrukteur", f"{new} ist kein Konstrukteur!"
+
+    arguments = args[1:]
     values = [do(envs, arg) for arg in arguments]
-    assert len(params) == len(values)
+    params = new[1]
+    assert len(params) == len(
+        values), f"Ungültige Anzahl Argumente für Konstrukteur {cls['_classname']}. Erwartet {len(params)} Argumente."
 
     envs.append(dict(zip(params, values)))
+    body = new[2]
     obj = do(envs, body)
-    obj["_class"] = cls
     envs.pop()
+
+    obj["_class"] = cls
 
     return obj
 
 
 def do_konstrukteur(envs, args):
-    """Create a constructor for a class.
+    """Creates a constructor for a class. The constructor is called when a new instance of a class is created.
 
     Syntax:
         ["konstrukteur", params, body]
     Returns:
         ["konstrukteur", params, body]
     """
-    assert len(args) == 2
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
+
     params = args[0]
     body = args[1]
     assert body[0] == "lexikon", f"Konstrukteur muss ein Lexikon mit Klassenattributen zurückgeben."
+
     return ["konstrukteur", params, body]
 
 
 def do_methode(envs, args):
-    """Create a new method for a class. The body has access to the object by using the variable "instanz"
+    """Creates a new method for a class. The body has access to the object by using the variable "instanz".
 
     Syntax:
         ["methode", params, body]
     Returns:
         ["methode", params, body]
     """
-    assert len(args) == 2
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
+
     params = args[0]
+    assert "instanz" not in params, f"Parameter 'instanz' darf nicht überschrieben werden."
+
     body = args[1]
+
     return ["methode", params, body]
 
 
-def do_methode_aufrufen(envs, args):
-    """Call a method on a given instance.
-
-    Syntax:
-        ["methode", instance, method_name, argument1, argument2, ...]
-    Returns:
-        result of the method call
-    """
-    assert len(args) >= 2
-    instance = do(envs, args[0])
-    assert isinstance(instance, dict)
-    method_name = do(envs, args[1])
-    assert isinstance(method_name, str)
-    arguments = args[2:]
-
-    method = find_method(instance["_class"], method_name)
-    assert isinstance(method, list)
-    assert method[0] == "methode"
-
-    params = method[1].copy()
-    params.append("instanz")
-    body = method[2].copy()
-
-    values = [do(envs, arg) for arg in arguments]
-    values.append(instance)
-
-    assert len(params) == len(values)
-
-    envs.append(dict(zip(params, values)))
-    result = do(envs, body)
-    envs.pop()
-
-    return result
-
-
 def find_method(cls, method_name):
-    assert isinstance(cls, dict), f"{cls} ist keine Klasse."
+    """Helper function to find a method in a class."""
 
     if method_name in cls:
         return cls[method_name]
@@ -571,30 +717,80 @@ def find_method(cls, method_name):
         return find_method(cls["_parent"], method_name)
 
 
+def do_methode_aufrufen(envs, args):
+    """Call a method on a given instance.
+
+    Syntax:
+        ["methode_aufrufen", instanz, methoden_name, argument1, argument2, ...]
+    Returns:
+        method(instanz, argument1, argument2, ...)
+    """
+
+    assert len(args) > 1, f"Ungültige Anzahl Argumente. Erwartet mindestens 2 Argumente."
+
+    instance = do(envs, args[0])
+    assert is_lgl_object(instance), f"{instance} ist kein Objekt!"
+
+    name = do(envs, args[0])
+    assert isinstance(name, str), f"Ungültiger Methodenname."
+
+    method = find_method(instance["_class"], name)
+    assert isinstance(method, list), f"{method} ist keine Methode!"
+    assert method[0] == "methode", f"{method} ist keine Methode!"
+
+    arguments = args[1:]
+    values = [do(envs, arg) for arg in arguments]
+    values.append(instance)
+    params = method[1].copy()
+    params.append("instanz")
+    assert len(params) == len(
+        values), f"Ungültige Anzahl Argumente für Methode {name}. Erwartet {len(params)} Argumente."
+
+    envs.append(dict(zip(params, values)))
+    body = method[2]
+    result = do(envs, body)
+    envs.pop()
+
+    return result
+
+
 ################
 # Control Flow #
 ################
 def do_abfolge(envs, args):
+    """Executes all the given operations one after the other.
+
+    Syntax:
+        ["abfolge", expr1, expr2, ...]
+    Returns:
+        None
+    """
+
     for operation in args:
         do(envs, operation)
+
     return None
 
 
 def do_solange(envs, args):
-    assert len(args) == 2
+    """Executes the given operation as long as the condition remains true.
+
+    Syntax:
+        ["solange", kondition, operation]
+    Returns:
+        None
+    """
+
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
+
     condition = args[0]
     operation = args[1]
+
     if do(envs, condition):
         do(envs, operation)
         do_solange(envs, [condition, operation])
+
     return None
-
-
-OPS = {
-    name.replace("do_", ""): func
-    for (name, func) in globals().items()
-    if name.startswith("do_")
-}
 
 
 def trace(func):
@@ -605,31 +801,42 @@ def trace(func):
     Behaviour:
         Wraps timer around the function call and writes a file.
     """
+
     def wrapper(envs, expr):
         if not cargs.trace: return func(envs, expr)
         if not isinstance(expr, list): return func(envs, expr)
         uid = str(uuid.uuid4().fields[0])[:6]
-        functionname = expr[0]
+        function_name = expr[0]
         time_start = time.perf_counter() if not cargs.usedatetime else datetime.now()
         with open(cargs.trace, "a") as logfile:
-            logfile.write(f"{uid},{functionname},start,{time_start}\n")
+            logfile.write(f"{uid},{function_name},start,{time_start}\n")
         result = func(envs, expr)
         time_stop = time.perf_counter() if not cargs.usedatetime else datetime.now()
         with open(cargs.trace, "a") as logfile:
-            logfile.write(f"{uid},{functionname},stop,{time_stop}\n")
+            logfile.write(f"{uid},{function_name},stop,{time_stop}\n")
         return result
 
     return wrapper
 
 
+OPS = {
+    name.replace("do_", ""): func
+    for (name, func) in globals().items()
+    if name.startswith("do_")
+}
+
+
 @trace
 def do(envs, expr):
+    """Evaluates the given expression."""
+
     # Lists trigger function calls
     if isinstance(expr, list):
-        assert expr[0] in OPS, f"Unknown operation '{expr[0]}'."
+        assert expr[0] in OPS, f"Unbekannte Operation '{expr[0]}'."
         func = OPS[expr[0]]
         result = func(envs, expr[1:])
         return result
+
     # Everything else returns itself
     else:
         return expr
@@ -639,20 +846,26 @@ def do(envs, expr):
 # Environment #
 ###############
 def get_envs(envs, name):
+    """Gets the value of a variable in the environment."""
+
     assert isinstance(name, str)
+
     for e in reversed(envs):
         if name in e:
             return e[name]
-    assert False, f"Unknown variable name {name}"
+
+    assert False, f"Unbekannte Variable '{name}'."
 
 
 def set_envs(envs, name, value):
+    """Sets the value of a variable in the environment."""
+
     assert isinstance(name, str)
+
     envs[-1][name] = value
 
 
 ########### MAIN EXECUTION #############
-
 def main():
     if cargs.trace:
         assert isinstance(cargs.trace, str)
