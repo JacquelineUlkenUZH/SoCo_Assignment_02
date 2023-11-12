@@ -731,14 +731,14 @@ def do_methode_aufrufen(envs, args):
     instance = do(envs, args[0])
     assert is_lgl_object(instance), f"{instance} ist kein Objekt!"
 
-    name = do(envs, args[0])
+    name = do(envs, args[1])
     assert isinstance(name, str), f"Ungültiger Methodenname."
 
     method = find_method(instance["_class"], name)
     assert isinstance(method, list), f"{method} ist keine Methode!"
     assert method[0] == "methode", f"{method} ist keine Methode!"
 
-    arguments = args[1:]
+    arguments = args[2:]
     values = [do(envs, arg) for arg in arguments]
     values.append(instance)
     params = method[1].copy()
