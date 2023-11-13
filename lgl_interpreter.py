@@ -65,26 +65,43 @@ def do_ausdrucken(envs, args):
     """Prints an expression to the console.
 
     Syntax:
-        ["ausdrucken", expr]
-        ["ausdrucken", expr, "nobr"] -> no linebreak at the end
-        ["ausdrucken", expr, "title"] -> print in green
+        ["ausdrucken", expr1, expr2, ...]
+            -> print(expr1, expr2, ...)
+        ["ausdrucken", expr1, expr2, ..., "nobr"]
+            -> print(expr1, expr2, ..., end="")
+            - no linebreak at the end.
+        ["ausdrucken", expr1, expr2, ..., "title"]
+            -> print(expr1, expr2, ...)
+            - prints in green
     Returns:
         None
     """
     assert len(args) > 0, f"Ungültige Anzahl Argumente. Erwartet mehr als 0 Argumente."
 
     nobr = "nobr" in args
+    try:
+        args.remove("nobr")
+    except ValueError:
+        pass
     title = "title" in args
+    try:
+        args.remove("title")
+    except ValueError:
+        pass
+    result = ""
     for arg in args:
-        result = do(envs, arg)
-        if title:
-            args.remove("title")
-            result = "\033[92m" + result + "\033[0m"  # Green
-        if nobr:
-            args.remove("nobr")
-            print(result, end="")
+        expr = do(envs, arg)
+        # Special printing for lists
+        if isinstance(expr, list) and expr[0] == "liste":
+            result += str(expr[2:])
         else:
-            print(result)
+            result += str(expr)
+    if title:
+        result = "\033[92m" + result + "\033[0m"  # Green
+    if nobr:
+        print(result, end="")
+    else:
+        print(result)
 
     return None
 
