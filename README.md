@@ -76,6 +76,20 @@ Arrays of fixed length are set by passing the length of the array as the first a
 
 The above prints `[1, 'Wort', 3.14]`.
 
+### Dictionaries with `do_lexikon`
+Dictionaries are created and edited by passing a list as the argument where the first element is the key and the second is the value. If the key already exists, the new value will just overwrite the existing value.
+
+```json
+["abfolge", 
+    ["variable_setzen", "person",
+        ["lexikon", ["Name", "Alice"], ["Alter", "25"], ["Beruf", "Lehrerin"]]
+    ],
+    ["ausdrucken", "person = ", ["variable_abrufen", "person"]]
+]
+```
+
+The above prints `person = {'Name': 'Alice', 'Alter': '25', 'Beruf': 'Lehrerin'}`.
+
 ### Object System
 Classes and objects in LGL are Python dictionaries:
 
