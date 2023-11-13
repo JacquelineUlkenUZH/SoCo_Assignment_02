@@ -65,6 +65,8 @@ def do_ausdrucken(envs, args):
     """Prints an expression to the console.
 
     Syntax:
+        ["ausdrucken"]
+            - prints a linebreak.
         ["ausdrucken", expr1, expr2, ...]
             -> print(expr1, expr2, ...)
         ["ausdrucken", expr1, expr2, ..., "nobr"]
@@ -76,16 +78,15 @@ def do_ausdrucken(envs, args):
     Returns:
         None
     """
-    assert len(args) > 0, f"Ungültige Anzahl Argumente. Erwartet mehr als 0 Argumente."
 
-    nobr = "nobr" in args
+    nobr = "-nobr" in args
     try:
-        args.remove("nobr")
+        args.remove("-nobr")
     except ValueError:
         pass
-    title = "title" in args
+    title = "-title" in args
     try:
-        args.remove("title")
+        args.remove("-title")
     except ValueError:
         pass
     result = ""
