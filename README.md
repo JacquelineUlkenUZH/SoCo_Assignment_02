@@ -12,7 +12,7 @@ These are the files we hand in:
 ### Interpreter
 usage: lgl_interpreter.py \[-h\] \[--trace TRACE\] \[--usedatetime\] files \[files ...\]
 
-Runs our little germal programming language.
+Runs our Little German Language.
 
 positional arguments:
   files          Specify lgl source files to run
@@ -39,37 +39,41 @@ options:
 Command-line arguments are parsed using `argparse`.
 
 ## Decisions
+### Arithmetic
+We implemented all the basic arithmetic operations. 
+
+In addition to the normal `do_addieren` and `do_multiplizieren` operations, we also implemented `do_summe` and 
+`do_produkt`, which accept a variable number of arguments and add, resp. multiply, all of these values.
 
 ### Print with `do_ausdrucken`
-Our implementation expects one or more arguments and prints them all.
+Our implementation can handle any number of arguments and will print them all.
 
 Interesting implementation details:
-- If a string "nobr" is passed, we print without line-break.
-- If a string "title" is passed, we colour printout green.
+- If a string "-nobr" is passed, we print without line-break at the end.
+- If a string "-title" is passed, we colour printout green.
 
 ### While loop with `do_solange`
-Our implementation expects two lists:
-- A list of length 1 or 3 containing a truth test.
-- A list of instructions that `do_abfolge()` can handle
+Our implementation expects two expressions (lists in Python):
+- A condition
+- An operation
 
 Interesting implementation details:
-- We implemented the truth test by constructing a testing string that Python then evaluates using `eval()`.
 - We implement repetition using recursive function calls.
-- We pass results recursively, because otherwise the last iteration would return None (because it doesn't run).
 
-### Arrays
+### Arrays with `do_liste`
 
-Arrays of fixed length are set by setting a variable with the list as content. The first argument is the length, then the content of the elements.
+Arrays of fixed length are set by passing the length of the array as the first argument, and the elements of the array as the remaining arguments.
 
 ```json
-["variable_setzen", "beispiel_liste",
-    ["liste", 3, 1, "Wort", 3.14]
-]
-
-["ausdrucken",
-    ["variable_abrufen", "beispiel_liste"]
-]
-# prints ['liste', 3, 1, 'Wort', 3.14]
+["abfolge", 
+    ["variable_setzen", "beispiel_liste",
+        ["liste", 3, 1, "Wort", 3.14]
+    ],
+    ["ausdrucken",
+        ["variable_abrufen", "beispiel_liste"]
+    ]
+]  
+# prints [1, 'Wort', 3.14]
 ```
 
 ### Tracing
