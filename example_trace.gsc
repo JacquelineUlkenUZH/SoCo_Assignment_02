@@ -12,5 +12,5 @@
             ]
         ]
     ],
-    ["call", "add_cubes", 3, 2]
+    ["funktion_aufrufen", "add_cubes", 3, 2]
 ]
