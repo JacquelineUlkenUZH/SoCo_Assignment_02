@@ -77,7 +77,7 @@ Arrays of fixed length are set by passing the length of the array as the first a
 The above prints `[1, 'Wort', 3.14]`.
 
 ### Object System
-Classes and objects LGL are Python dictionaries:
+Classes and objects in LGL are Python dictionaries:
 
 Class:
 ```Python
