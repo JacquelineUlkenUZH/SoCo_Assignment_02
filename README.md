@@ -61,7 +61,6 @@ Interesting implementation details:
 - We implement repetition using recursive function calls.
 
 ### Arrays with `do_liste`
-
 Arrays of fixed length are set by passing the length of the array as the first argument, and the elements of the array as the remaining arguments.
 
 ```json
@@ -72,12 +71,31 @@ Arrays of fixed length are set by passing the length of the array as the first a
     ["ausdrucken",
         ["variable_abrufen", "beispiel_liste"]
     ]
-]  
-# prints [1, 'Wort', 3.14]
+]
+```
+
+The above prints `[1, 'Wort', 3.14]`.
+
+### Object System
+Classes and objects LGL are Python dictionaries:
+
+Class:
+```Python
+example_class = {
+    "_classname": "example_class",
+    "_parent": None,
+    "_new": ["konstrukteur", params, body],
+    "method":  ["methode", params, body]}
+```
+
+Object:
+```Python
+example_object = {
+    "_class": example_class,
+    "attribute": attribute}
 ```
 
 ### Tracing
-
 We implemented the tracing as a decorator `@trace` function that wraps the function `do()`. 
 
 By default, **we use `time.perf_counter()` to measure performance**. If you wish to use `datetime.datetime.now()`, the option is available by setting an additional `--usedatetime` flag when using `lgl_interpreter.py` with `--trace`. 
