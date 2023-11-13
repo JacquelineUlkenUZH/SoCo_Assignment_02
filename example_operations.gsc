@@ -52,7 +52,7 @@
     ["eintrag_setzen", ["variable_abrufen", "person"], "Alter", "26"],
     ["ausdrucken", "person['Alter'] = ", ["eintrag_abrufen", ["variable_abrufen", "person"], "Alter"]],
     ["ausdrucken", "person = ", ["variable_abrufen", "person"]],
-    ["ausdrucken", "Now we create another dictionary: {'Name': 'Alice', 'Email': 'alice.muster@email.com', 'registriert': True}, and merge the two arrays:"],
+    ["ausdrucken", "Now we create another dictionary: {'Name': 'Alice', 'Email': 'alice.muster@email.com', 'registriert': True}, and merge the two dictionary:"],
     ["variable_setzen", "person_extra", ["lexikon", ["Name", "Alice"], ["Email", "alice.muster@email.com"], ["registriert", ["wahr"]]]],
     ["ausdrucken", "person_extra = ", ["variable_abrufen", "person_extra"]],
     ["variable_setzen", "person", ["lexika_vereinen", ["variable_abrufen", "person"], ["variable_abrufen", "person_extra"]]],
