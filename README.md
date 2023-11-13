@@ -84,5 +84,6 @@ By default, **we use `time.perf_counter()` to measure performance**. If you wish
 
 When tracing, we **write output immediately to the file**. A more mature implementation should write the file at the end of the tracing, so as not to add extra execution time.
 
+### Reporting
 `reporting.py` automatically detects and properly handles either kind of timestamp.
 
