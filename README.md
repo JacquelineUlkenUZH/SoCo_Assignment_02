@@ -9,7 +9,29 @@ These are the files we hand in:
 - `reporting.py` consumes said logfile and reports execution time deltas in tabular form.
 
 ## Getting started
-### Interpreter
+
+### Quickstart: Running showcase
+
+Execute the following commands in the supplied directory.
+
+Running example_operations.gsc:
+```
+python ./lgl_interpreter.py ./example_operations.gsc
+```
+
+Running example_class.gsc which only outputs the required sum of densities:
+```
+python ./lgl_interpreter.py ./example_class.gsc
+```
+
+Tracing example_trace.gsc and looking at a summary report:
+```
+python ./lgl_interpreter.py ./example_trace.gsc --trace tracer.log
+python ./reporting.py ./tracer.log
+```
+*Note: We recommend using --perf to trace.*
+
+### Using lgl_interpreter.py
 usage: lgl_interpreter.py \[-h\] \[--trace TRACE\] \[--perf\] files \[files ...\]
 
 Runs our Little German Language.
@@ -23,8 +45,7 @@ options:
                         Log details of start and end times to FILENAME
   -p, --perf     Use the superior perf_counter to trace execution times (recommended)
 
-### Reporting
-
+### Using reporting.py
 usage: reporting.py \[-h\] file
 
 Takes tracing from lgl_interpreter.py and generates a report
