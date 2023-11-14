@@ -654,6 +654,23 @@ def is_lgl_object(obj):
     return True
 
 
+def do_konstrukteur(envs, args):
+    """Creates a constructor for a class. The constructor is called when a new instance of a class is created.
+
+    Syntax:
+        ["konstrukteur", params, body]
+    Returns:
+        ["konstrukteur", params, body]
+    """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
+
+    params = args[0]
+    body = args[1]
+    assert body[0] == "lexikon", f"Konstrukteur muss ein Lexikon mit Klassenattributen zurückgeben."
+
+    return ["konstrukteur", params, body]
+
+
 def do_objekt(envs, args):
     """Creates an instance of a class.
 
@@ -690,23 +707,6 @@ def do_objekt(envs, args):
     return obj
 
 
-def do_konstrukteur(envs, args):
-    """Creates a constructor for a class. The constructor is called when a new instance of a class is created.
-
-    Syntax:
-        ["konstrukteur", params, body]
-    Returns:
-        ["konstrukteur", params, body]
-    """
-    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
-
-    params = args[0]
-    body = args[1]
-    assert body[0] == "lexikon", f"Konstrukteur muss ein Lexikon mit Klassenattributen zurückgeben."
-
-    return ["konstrukteur", params, body]
-
-
 def do_methode(envs, args):
     """Creates a new method for a class. The body has access to the object by using the variable "instanz".
 
@@ -723,16 +723,6 @@ def do_methode(envs, args):
     body = args[1]
 
     return ["methode", params, body]
-
-
-def find_method(cls, method_name):
-    """Helper function to find a method in a class."""
-
-    if method_name in cls:
-        return cls[method_name]
-    else:
-        assert cls["_parent"], f"{method_name} ist nicht implementiert."
-        return find_method(cls["_parent"], method_name)
 
 
 def do_methode_aufrufen(envs, args):
@@ -770,6 +760,16 @@ def do_methode_aufrufen(envs, args):
     envs.pop()
 
     return result
+
+
+def find_method(cls, method_name):
+    """Helper function to find a method in a class."""
+
+    if method_name in cls:
+        return cls[method_name]
+    else:
+        assert cls["_parent"], f"{method_name} ist nicht implementiert."
+        return find_method(cls["_parent"], method_name)
 
 
 ################
