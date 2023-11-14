@@ -109,6 +109,35 @@ example_object = {
     "attribute": attribute}
 ```
 
+The user can define a new class with `do_klasse`, which takes a name, parent, constructor and a dictionary of methods.
+The parent can either be `None` (written as `["leer"]` in LGL) or another class. We have implemented a helper function to check if the user provided a
+valid class as a parent. We chose to implement a special `do_konstrukteur` function, with an additional assert to check
+that the user defined constructor returns a dictionary of attributes. Another perk of this is that this makes a class 
+declaration more readable:
+
+```json
+["klasse", "Shape", ["leer"],
+    ["konstrukteur", ["name"],
+        ["lexikon",
+            ["name", ["variable_abrufen", "name"]]
+        ]
+    ],
+    ["lexikon",
+        ["density",
+            ["methode", ["weight"],
+                ["dividieren", ["variable_abrufen", "weight"], ["methode_aufrufen", ["variable_abrufen", "instanz"], "area"]]
+            ]
+        ]
+    ]
+]
+```
+
+Similarily, we have a special `do_methode` function. If an expression is marked as a method, the `do_methode_aufrufen` 
+automatically adds the parameter `instanz` containing the given object to the environment. This way users don't have to 
+include this parameter in their method declaration, and any method will always have access to their respective object.
+
+The `do_object` function calls the constructor of the given class to create an instance of it.
+
 ### Tracing
 We implemented the tracing as a decorator `@trace` function that wraps the function `do()`. 
 
