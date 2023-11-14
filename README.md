@@ -131,12 +131,11 @@ declaration more readable:
     ]
 ]
 ```
+The `do_objekt` function calls the constructor of the given class to create an instance of it.
 
 Similarily, we have a special `do_methode` function. If an expression is marked as a method, the `do_methode_aufrufen` 
 automatically adds the parameter `instanz` containing the given object to the environment. This way users don't have to 
 include this parameter in their method declaration, and any method will always have access to their respective object.
-
-The `do_object` function calls the constructor of the given class to create an instance of it.
 
 ### Tracing
 We implemented the tracing as a decorator `@trace` function that wraps the function `do()`. 
