@@ -54,11 +54,10 @@ Interesting implementation details:
 
 ### While loop with `do_solange`
 Our implementation expects two expressions (lists in Python):
-- A condition
-- An operation
+- A condition that will be evaluation each time
+- An operation that will be executed if the condition is met.
 
-Interesting implementation details:
-- We implement repetition using recursive function calls.
+We implement repetition using recursive function calls.
 
 ### Arrays with `do_liste`
 Arrays of fixed length are set by passing the length of the array as the first argument, and the elements of the array as the remaining arguments.
