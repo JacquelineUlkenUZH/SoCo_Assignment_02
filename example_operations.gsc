@@ -35,6 +35,27 @@
     ],
     ["ausdrucken"],
 
+    ["ausdrucken", "### Funktionen ###", "-title"],
+    ["ausdrucken", "We create a function fakultaet that multiplies 1 * 2 * 3 * ... * n and run fakultaet(3) and fakultaet(123)"],
+    ["variable_setzen", "fakultaet", 
+        ["funktion", "n", 
+            ["abfolge",
+                ["variable_setzen", "i", 1],
+                ["variable_setzen", "result", 1],
+                ["solange", ["kleiner_gleich", ["variable_abrufen", "i"], ["variable_abrufen", "n"]],
+                    ["abfolge",
+                        ["variable_setzen", "result", ["produkt", ["variable_abrufen", "result"], ["variable_abrufen", "i"]]],
+                        ["variable_setzen", "i", ["addieren", ["variable_abrufen", "i"], 1]]
+                    ]
+                ],
+                ["ausdrucken", "fakultaet(", ["variable_abrufen", "n"], ") = ", ["variable_abrufen", "result"]]
+            ]
+        ]
+    ],
+    ["funktion_aufrufen", "fakultaet", 3],
+    ["funktion_aufrufen", "fakultaet", 123],
+    ["ausdrucken"],
+
     ["ausdrucken", "### Arrays ###", "-title"],
     ["ausdrucken", "We create an array of size 3: [1, 'Wort', 3.14], change 'Wort' to 'Zahl' and retrieve the second element"],
     ["variable_setzen", "beispiel_liste",["liste", 3, 1, "Wort", 3.14]],
