@@ -4,13 +4,13 @@ Assignment 2 for the course Software Construction 23HS 22BI0004.
 These are the files we hand in:
 - `lgl_interpreter.py` interprets our implementation of the Little German Language, LGL.
 - `example_operations.gsc` a rather beautifully formatted showcase of our lovely programming language.
-- `example_class.gsc` showcases classes and objects
+- `example_class.gsc` showcases classes, objects, methods.
 - `example_trace.gsc` showcases tracing execution times to a logfile.
 - `reporting.py` consumes said logfile and reports execution time deltas in tabular form.
 
 ## Getting started
 ### Interpreter
-usage: lgl_interpreter.py \[-h\] \[--trace TRACE\] \[--usedatetime\] files \[files ...\]
+usage: lgl_interpreter.py \[-h\] \[--trace TRACE\] \[--perf\] files \[files ...\]
 
 Runs our Little German Language.
 
@@ -21,8 +21,7 @@ options:
   -h, --help            show this help message and exit
   -t TRACE, --trace TRACE
                         Log details of start and end times to FILENAME
-  -d, --usedatetime     Use datetime instead of perf_counter to trace
-                        execution times (not recommended)
+  -p, --perf     Use the superior perf_counter to trace execution times (recommended)
 
 ### Reporting
 
@@ -58,6 +57,21 @@ Our implementation expects two expressions (lists in Python):
 - An operation that will be executed if the condition is met.
 
 We implement repetition using recursive function calls.
+
+### Variables with `variable_setzen` and `variable_abrufen`
+Variables are stored in the topmost environment dictionary using the helper function `set_envs()`.
+
+Variables are retrieved by searching through the whole stack of environments in reversed order using the helper function `get_envs()`.
+
+### Functions with `do_funktion`
+Functions in LGL are a normal named variable set with `variable_setzen` whose value is a function.
+
+A function is a list of three items:
+- A string "funktion" declaring this to be a function.
+- A single parameter or a list of parameters.
+- A body of properly formatted LGL code.
+
+Functions are executed using `funktion_aufrufen` providing the relevant arguments.
 
 ### Arrays with `do_liste`
 Arrays of fixed length are set by passing the length of the array as the first argument, and the elements of the array as the remaining arguments.
@@ -109,8 +123,7 @@ example_object = {
 ```
 
 The user can define a new class with `do_klasse`, which takes a name, parent, constructor and a dictionary of methods.
-The parent can either be `None` (written as `["leer"]` in LGL) or another class. We have implemented a helper function to check if the user provided a
-valid class as a parent. We chose to implement a special `do_konstrukteur` function, with an additional assert to check
+The parent can either be `None` (written as `["leer"]` in LGL) or another class. We have implemented a helper function to check if the user provided a valid class as a parent. We chose to implement a special `do_konstrukteur` function, with an additional assert to check
 that the user defined constructor returns a dictionary of attributes. Another perk of this is that this makes a class 
 declaration more readable:
 
@@ -137,12 +150,12 @@ automatically adds the parameter `instanz` containing the given object to the en
 include this parameter in their method declaration, and any method will always have access to their respective object.
 
 ### Tracing
-We implemented the tracing as a decorator `@trace` function that wraps the function `do()`. 
+We implemented tracing of custom functions and methods using a function `trace()` that wraps `do_funktion_aufrufen()` and `do_methode_aufrufen()` using a decorator (`@trace`).
 
-By default, **we use `time.perf_counter()` to measure performance**. If you wish to use `datetime.datetime.now()`, the option is available by setting an additional `--usedatetime` flag when using `lgl_interpreter.py` with `--trace`. 
+By default, we use `datetime.datetime.now()` to measure performance. If you wish to use the superior `time.perf_counter()`, the option is available by setting an additional `--perf` flag when using `lgl_interpreter.py` with `--trace`. 
 
-When tracing, we **write output immediately to the file**. A more mature implementation should write the file at the end of the tracing, so as not to add extra execution time.
+When tracing, we write output immediately to the file. A more mature implementation could write the file at the end of the tracing, so as not to add extra execution time.
 
 ### Reporting
-`reporting.py` automatically detects and properly handles either kind of timestamp.
+`reporting.py` automatically detects and properly handles either kind of timestamp and prints a summary as a table.
 
