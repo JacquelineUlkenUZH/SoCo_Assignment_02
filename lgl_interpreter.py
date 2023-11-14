@@ -654,23 +654,6 @@ def is_lgl_object(obj):
     return True
 
 
-def do_konstrukteur(envs, args):
-    """Creates a constructor for a class. The constructor is called when a new instance of a class is created.
-
-    Syntax:
-        ["konstrukteur", params, body]
-    Returns:
-        ["konstrukteur", params, body]
-    """
-    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
-
-    params = args[0]
-    body = args[1]
-    assert body[0] == "lexikon", f"Konstrukteur muss ein Lexikon mit Klassenattributen zurückgeben."
-
-    return ["konstrukteur", params, body]
-
-
 def do_objekt(envs, args):
     """Creates an instance of a class.
 
@@ -705,6 +688,23 @@ def do_objekt(envs, args):
     obj["_class"] = cls
 
     return obj
+
+
+def do_konstrukteur(envs, args):
+    """Creates a constructor for a class. The constructor is called when a new instance of a class is created.
+
+    Syntax:
+        ["konstrukteur", params, body]
+    Returns:
+        ["konstrukteur", params, body]
+    """
+    assert len(args) == 2, f"Ungültige Anzahl Argumente. Erwartet: 2, Gegeben: {len(args)}."
+
+    params = args[0]
+    body = args[1]
+    assert body[0] == "lexikon", f"Konstrukteur muss ein Lexikon mit Klassenattributen zurückgeben."
+
+    return ["konstrukteur", params, body]
 
 
 def do_methode(envs, args):
