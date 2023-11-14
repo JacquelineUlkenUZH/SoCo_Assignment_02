@@ -22,8 +22,8 @@ parser.add_argument("files", nargs="+", help="Specify lgl source files to run")
 parser.add_argument(
     "-t", "--trace", help="Log details of start and end times to FILENAME"
 )
-parser.add_argument("-d", "--usedatetime", action="store_true",
-                    help="Use datetime instead of perf_counter to trace execution times (not recommended)")
+parser.add_argument("-p", "--perf", action="store_true",
+                    help="Use the superior perf_counter to trace execution times (recommended)")
 cargs = parser.parse_args()
 
 
@@ -58,9 +58,36 @@ def do_leer(envs, args):
     return None
 
 
-############
-# Printing #
-############
+########################
+# Printing and tracing #
+########################
+def trace(func):
+    """Wraps a function to log its start and end times to a file.
+
+    Syntax:
+        Use decorator: @trace
+    Behaviour:
+        Wraps timer around the function call and writes a file.
+    """
+
+    def wrapper(envs, expr):
+        if not cargs.trace: return func(envs, expr)
+        if not isinstance(expr, list): return func(envs, expr)
+        uid = str(uuid.uuid4().fields[0])[:6]
+        # Functions are in expr[0], methods in expr[1], hence:
+        function_name = expr[0] if not isinstance(expr[0], list) else expr[1]
+        time_start = datetime.now() if not cargs.perf else time.perf_counter()
+        with open(cargs.trace, "a") as logfile:
+            logfile.write(f"{uid},{function_name},start,{time_start}\n")
+        result = func(envs, expr)
+        time_stop = datetime.now() if not cargs.perf else time.perf_counter()
+        with open(cargs.trace, "a") as logfile:
+            logfile.write(f"{uid},{function_name},stop,{time_stop}\n")
+        return result
+
+    return wrapper
+
+
 def do_ausdrucken(envs, args):
     """Prints an expression to the console.
 
@@ -556,7 +583,7 @@ def do_funktion(envs, args):
 
     return ["funktion", params, body]
 
-
+@trace
 def do_funktion_aufrufen(envs, args):
     """Executes a given function with the given arguments.
 
@@ -724,7 +751,7 @@ def do_methode(envs, args):
 
     return ["methode", params, body]
 
-
+@trace
 def do_methode_aufrufen(envs, args):
     """Call a method on a given instance.
 
@@ -811,32 +838,6 @@ def do_solange(envs, args):
     return None
 
 
-def trace(func):
-    """Wraps a function to log its start and end times to a file.
-
-    Syntax:
-        Use as decorator: @trace
-    Behaviour:
-        Wraps timer around the function call and writes a file.
-    """
-
-    def wrapper(envs, expr):
-        if not cargs.trace: return func(envs, expr)
-        if not isinstance(expr, list): return func(envs, expr)
-        uid = str(uuid.uuid4().fields[0])[:6]
-        function_name = expr[0]
-        time_start = time.perf_counter() if not cargs.usedatetime else datetime.now()
-        with open(cargs.trace, "a") as logfile:
-            logfile.write(f"{uid},{function_name},start,{time_start}\n")
-        result = func(envs, expr)
-        time_stop = time.perf_counter() if not cargs.usedatetime else datetime.now()
-        with open(cargs.trace, "a") as logfile:
-            logfile.write(f"{uid},{function_name},stop,{time_stop}\n")
-        return result
-
-    return wrapper
-
-
 OPS = {
     name.replace("do_", ""): func
     for (name, func) in globals().items()
@@ -844,7 +845,7 @@ OPS = {
 }
 
 
-@trace
+
 def do(envs, expr):
     """Evaluates the given expression."""
 
